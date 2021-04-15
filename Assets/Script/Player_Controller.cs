@@ -32,7 +32,10 @@ public class Player_Controller : MonoBehaviour
     private Animator Animator; //플레이어의 애니메이터
     private Vector3 Movedir; // 플레아어가 움직이는 방향
 
-
+    
+    private bool SetTrigger = false;
+    private float CoolTime;
+    private float SetCooltime = 0.6f; // 점프쿨타임을 0.6초로 설정
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
@@ -47,7 +50,17 @@ public class Player_Controller : MonoBehaviour
         CameraRotation(); //1인칭 카메라 상하 움직임 변수
 
         PlayerAnimation();
-        
+
+        Debug.Log(CoolTime);
+        if (SetTrigger) //앉기 쿨타임 설정
+        {
+            CoolTime += Time.deltaTime;
+            if(CoolTime > SetCooltime)
+            {
+                CoolTime = 0;
+                SetTrigger = false;
+            }
+        }
        
     }
 
@@ -63,15 +76,14 @@ public class Player_Controller : MonoBehaviour
             Movedir = transform.TransformDirection(Movedir); // 백터를 로컬좌표계에서 월드 좌표계 기준으로 변환
 
 
-            if (Player_State == (int)State.is_Walk) // 만약 현재 상태가 걷는 중이라면?
+            if (Player_State == (int)State.is_Walk || Player_State == (int)State.is_Stop) // 만약 현재 상태가 걷거나 멈춤이라면?
             {
                 Movedir *= Speed; // 스피드 값만큼 이동속도 증가 
             }
 
             else if (Player_State == (int)State.is_Run) // 만약 현재 상태가 달리는 중이라면?
             {
-                Movedir *= Speed; // 스피드 값만큼 이동속도 증가
-                Movedir.z *= RunSpeed; // 앞뒤로 달리는 속도를 런 스피드 값만큼 곱한다. 
+                Movedir *= Speed * RunSpeed; // 스피드 값 * 달리기 계수만큼 이동속도 증가
             }
 
             else if (Player_State == (int)State.is_Sit) // 만약 현재 상태가 앉아있는 중이라면?
@@ -115,34 +127,76 @@ public class Player_Controller : MonoBehaviour
 
     void Now_State() // 키입력을 받아 현재상태를 변경하는 함수
     {
-        if (Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0) //만약 움직이지 않을 경우?
+        if (Input.GetAxis("Vertical") == 0 && Player_State != 1) //만약 움직이지 않을 경우나 앉아있지 않을 경우?
         {
             Player_State = (int)State.is_Stop;
         }
 
-        else  if (Input.GetKeyDown(KeyCode.C)) // 만약 C버튼을 눌렀으면?
+        if (Input.GetKey(KeyCode.C)) // 만약 C버튼을 눌렀으면?
         {
-            if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
-                Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
-            else //만약 앉아있는 중이라면?
-                Player_State = (int)State.is_Walk; //플레이어의 상태를 걷는 중으로 변경
+            if (!SetTrigger) // 쿨타임 설정
+            {
+                SetTrigger = true;
+                if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
+                    Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
+                else //만약 앉아있는 중이라면?
+                    Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
+            }
+            
+
+            Debug.Log("1");
         }
 
-        else if (Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
+        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
         {
             Player_State = (int)State.is_Run; // 플레이어의 상태를 달리는 중으로 변경
         }
         
-        else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?
+        else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f )) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?
         {
             Player_State = (int)State.is_Walk; //플레이어의 상태를 걷는 중으로 변경
         }
+
+        if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
+        {
+            Controller.height = 1.3f; // 캐릭터의 높이를 1.4로 낮춤
+            Controller.center = new Vector3(0f, 0.65f, 0.1f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.6f;
+        }
+        else
+        {
+            Controller.height = 1.7f; // 캐릭터의 높이를 1.7로 올림
+            Controller.center = new Vector3(0f, 0.85f, 0f); //콜라이더의 중심점을 0.85로 올림
+            Controller.radius = 0.5f;
+        }
+
+
+        /*if(Input.GetKeyDown(KeyCode.C) && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f || Player_State == (int)State.is_Sit)) // 만약 걷거나 달리는 도중 C를 눌렀을 경우?
+        {
+            if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
+                Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
+            else //만약 앉아있는 중이라면?
+                Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
+            Debug.Log("2");
+        }*/
 
     }
 
     void PlayerAnimation()
     {
-        Animator.SetFloat("MoveSpeed", Input.GetAxis("Vertical"));
-        Animator.SetInteger("PlayerState", Player_State);
+        Animator.SetFloat("MoveSpeed", Input.GetAxis("Vertical")); //애니메이션에 있는 MoveSpeed변수에 전후 방향키 입력전달
+        Animator.SetFloat("HorizontalSpeed", Input.GetAxis("Horizontal")); //애니메이션에 있는 HorizontalSpeed변수에 좌우 방향키 입력전달
+        Animator.SetInteger("PlayerState", Player_State); // 현재상태 변수 전달
+        
+    }
+
+    void CoolTimeSet()
+    {
+        
+        if (!SetTrigger)
+        {
+            SetTrigger = true;
+        }
+       
     }
 }
