@@ -6,29 +6,54 @@ public class Player_Controller : MonoBehaviour
 {
     enum State //플레이어의 상태를 열거
     {
-        is_Walk, //0일경우 걷는중
-        is_Sit, // 1일경우 앉아있는중
-        is_Run, // 2일경우 뛰는중
+        is_Stop, //0일경우 멈춰있는 중
+        is_Sit = 1, // 1일경우 앉아있는중
+        is_Walk = 10, //10일경우 걷는중
+        is_Run = 11, // 11일경우 뛰는중
+
     }
 
-
-    //플레이어 능력치
+    [Header ("플레이어 속성")]
     public float Speed = 6.0f; // 플레이어의 속도
     public float RunSpeed = 1.5f; // 플레이어가 달리는 속도(곱연산)
     public float JumpSpeed = 8.0f; // 플레이어의 점프 속도
     public float gravity = 20.0f; // 플레이어에게 작용하는 중력크기
-    private int Player_State = 0; // 플레이어의 현재 상태
+    public int Player_State = 0; // 플레이어의 현재 상태
+
+
+    [Header ("카메라 속성")]
+    public Camera MainCamera; //플레이어 1인칭 카메라 변수
+    public float LookSensitivity; //카메라 회전 속도
+    public float CameraRotationLimit = 60; // 카메라의 상하 각도를 제한하는 값
+    private float currentCameraRotationX = 5; //카메라 x축의 회전값
+
 
     private CharacterController Controller; //플레이어의 캐릭터콘트롤러 콜라이더
+    private Animator Animator; //플레이어의 애니메이터
     private Vector3 Movedir; // 플레아어가 움직이는 방향
+
 
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
+        Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
     }
 
     private void FixedUpdate()
+    {
+        PlayerMove(); // 플레이어의 전후좌우 움직임 함수
+        PlayerRotation(); // 플레이어 좌우 움직임 변수
+        CameraRotation(); //1인칭 카메라 상하 움직임 변수
+
+        PlayerAnimation();
+        
+       
+    }
+
+
+
+    private void PlayerMove() //플레이어의 상하좌우 움직임의 함수
     {
         if (Controller.isGrounded) // 만약 플레이어가 땅에 있으면?
         {
@@ -43,13 +68,13 @@ public class Player_Controller : MonoBehaviour
                 Movedir *= Speed; // 스피드 값만큼 이동속도 증가 
             }
 
-            else if(Player_State == (int)State.is_Run) // 만약 현재 상태가 달리는 중이라면?
+            else if (Player_State == (int)State.is_Run) // 만약 현재 상태가 달리는 중이라면?
             {
                 Movedir *= Speed; // 스피드 값만큼 이동속도 증가
                 Movedir.z *= RunSpeed; // 앞뒤로 달리는 속도를 런 스피드 값만큼 곱한다. 
             }
 
-            else if(Player_State == (int)State.is_Sit) // 만약 현재 상태가 앉아있는 중이라면?
+            else if (Player_State == (int)State.is_Sit) // 만약 현재 상태가 앉아있는 중이라면?
             {
                 Movedir *= (Speed * 0.5f); // 스피드/2 값만큼 이동속도 증가
             }
@@ -65,14 +90,37 @@ public class Player_Controller : MonoBehaviour
         Movedir.y -= gravity * Time.deltaTime; // 캐릭터 중력적용
 
         Controller.Move(Movedir * Time.deltaTime); // 캐릭터를 이동
+    }
 
-       
+
+    private void CameraRotation() // 카메라의 상하움직임을 구현한 함수
+    {
+        float _XRotation = Input.GetAxisRaw("Mouse Y"); // 마우스 움직임 값을 변수에 넣는다. -1~1
+        float _CameraRotationX = _XRotation * LookSensitivity;
+
+        currentCameraRotationX -= _CameraRotationX; //위에서 구한 마우스 움직임 각도를 빼준다.(더하면 카메라가 반전됨)
+        currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -CameraRotationLimit, CameraRotationLimit); //카메라 상하의 움직임을 일정 각도이상으로 안꺽이게 제한
+
+        MainCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f); //위에서 구한 값으로 카메라 각도를 변경
+    }
+
+
+    void PlayerRotation() //플레이어의 좌우회전을 구현한 함수
+    {
+        float _yRotation = Input.GetAxisRaw("Mouse X");// 마우스 좌우값을 받아 변수에 저장 (-1 ~ 1);
+        Vector3 _PlayerRotationY = new Vector3(0f, _yRotation, 0f) * LookSensitivity; //좌우 값에 센서민감도를 곱한다
+        transform.Rotate(_PlayerRotationY); // 위에서 구한 회전 각만큼 회전
     }
 
 
     void Now_State() // 키입력을 받아 현재상태를 변경하는 함수
     {
-        if (Input.GetKeyDown(KeyCode.C)) // 만약 C버튼을 눌렀으면?
+        if (Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0) //만약 움직이지 않을 경우?
+        {
+            Player_State = (int)State.is_Stop;
+        }
+
+        else  if (Input.GetKeyDown(KeyCode.C)) // 만약 C버튼을 눌렀으면?
         {
             if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
                 Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
@@ -89,5 +137,12 @@ public class Player_Controller : MonoBehaviour
         {
             Player_State = (int)State.is_Walk; //플레이어의 상태를 걷는 중으로 변경
         }
+
+    }
+
+    void PlayerAnimation()
+    {
+        Animator.SetFloat("MoveSpeed", Input.GetAxis("Vertical"));
+        Animator.SetInteger("PlayerState", Player_State);
     }
 }
