@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
-    enum State //플레이어의 상태를 열거
+    public enum State //플레이어의 상태를 열거
     {
         is_Stop, //0일경우 멈춰있는 중
         is_Sit = 1, // 1일경우 앉아있는중
@@ -47,21 +47,12 @@ public class Player_Controller : MonoBehaviour
     private void FixedUpdate()
     {
         PlayerMove(); // 플레이어의 전후좌우 움직임 함수
-        PlayerRotation(); // 플레이어 좌우 움직임 변수
-        CameraRotation(); //1인칭 카메라 상하 움직임 변수
+        PlayerRotation(); // 플레이어 좌우 움직임 함수
+        CameraRotation(); //1인칭 카메라 상하 움직임 함수
 
         PlayerAnimation();
 
-        Debug.Log(CoolTime);
-        if (SetTrigger) //앉기 쿨타임 설정
-        {
-            CoolTime += Time.deltaTime;
-            if(CoolTime > SetCooltime)
-            {
-                CoolTime = 0;
-                SetTrigger = false;
-            }
-        }
+        CoolTimeSet();
        
     }
 
@@ -169,26 +160,17 @@ public class Player_Controller : MonoBehaviour
 
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
-            Controller.height = 1.3f; // 캐릭터의 높이를 1.4로 낮춤
-            Controller.center = new Vector3(0f, 0.65f, 0.1f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.height = 1.3f; // 캐릭터의 높이를 1.3로 낮춤
+            Controller.center = new Vector3(0f, 0.7f, 0.1f); //콜라이더의 중심점을 0.7로 낮춤
             Controller.radius = 0.6f;
         }
         else
         {
             Controller.height = 1.7f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.85f, 0f); //콜라이더의 중심점을 0.85로 올림
+            Controller.center = new Vector3(0f, 0.9f, 0f); //콜라이더의 중심점을 0.9로 올림
             Controller.radius = 0.5f;
         }
 
-
-        /*if(Input.GetKeyDown(KeyCode.C) && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f || Player_State == (int)State.is_Sit)) // 만약 걷거나 달리는 도중 C를 눌렀을 경우?
-        {
-            if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
-                Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
-            else //만약 앉아있는 중이라면?
-                Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
-            Debug.Log("2");
-        }*/
 
     }
 
@@ -202,11 +184,14 @@ public class Player_Controller : MonoBehaviour
 
     void CoolTimeSet()
     {
-        
-        if (!SetTrigger)
+        if (SetTrigger) //쿨타임 설정
         {
-            SetTrigger = true;
+            CoolTime += Time.deltaTime;
+            if (CoolTime > SetCooltime)
+            {
+                CoolTime = 0;
+                SetTrigger = false;
+            }
         }
-       
     }
 }
