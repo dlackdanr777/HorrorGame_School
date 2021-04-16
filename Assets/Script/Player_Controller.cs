@@ -19,7 +19,6 @@ public class Player_Controller : MonoBehaviour
     public float JumpSpeed = 8.0f; // 플레이어의 점프 속도
     public float gravity = 20.0f; // 플레이어에게 작용하는 중력크기
     public int Player_State = 0; // 플레이어의 현재 상태
-    public Flashlight_PRO Flash; // 플레이어가 사용하는 플래쉬
 
 
     [Header ("카메라 속성")]
@@ -156,15 +155,6 @@ public class Player_Controller : MonoBehaviour
         else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f )) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?
         {
             Player_State = (int)State.is_Walk; //플레이어의 상태를 걷는 중으로 변경
-        }
-
-        if (Input.GetKey(KeyCode.F))
-        {
-            if (!SetTrigger) // 쿨타임 설정
-            {
-                SetTrigger = true;
-                Flash.Switch(); //F키로 플래시 켯다 끄기기능
-            }
         }
 
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
