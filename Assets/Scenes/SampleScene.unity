@@ -429,7 +429,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: -7.468628, z: 6.32e-43, w: 8.45e-43}
+  m_BoundingSphereOverride: {x: 6.32e-43, y: 3.4719e-41, z: 0, w: -1}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1231,7 +1231,7 @@ GameObject:
   - component: {fileID: 224037994183985495}
   - component: {fileID: 224037994183985496}
   m_Layer: 0
-  m_Name: Player_Test
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
