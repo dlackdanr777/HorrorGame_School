@@ -5,7 +5,10 @@ using UnityEngine;
 public class FootStepSound : MonoBehaviour
 {
     private Player_Controller Player; //플레이어의 스크립트를 받아옴
-    private AudioSource Audio; //플레이어 발의 컴포넌트를 받아온다
+    private AudioSource Audio; //플레이어 발의 컴포넌트를 받아옴
+
+    [Header ("발소리 음원")]
+    public AudioClip[] FootSound = new AudioClip[3]; //발소리를 여러개 받는다
 
     private void Start()
     {
@@ -31,6 +34,8 @@ public class FootStepSound : MonoBehaviour
 
         if (other.gameObject.tag == "Floor")
         {
+            int random = Random.Range(0, FootSound.Length); 
+            Audio.clip = FootSound[random];
             Audio.Play();
             Debug.Log("발소리");
         }

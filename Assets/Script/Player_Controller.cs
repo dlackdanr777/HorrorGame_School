@@ -28,6 +28,9 @@ public class Player_Controller : MonoBehaviour
     public float CameraRotationLimit = 60; // 카메라의 상하 각도를 제한하는 값
     private float currentCameraRotationX = 5; //카메라 x축의 회전값
 
+    public GameObject head;
+    public GameObject Flashlight;
+
 
     private CharacterController Controller; //플레이어의 캐릭터콘트롤러 콜라이더
     private Animator Animator; //플레이어의 애니메이터
@@ -53,7 +56,7 @@ public class Player_Controller : MonoBehaviour
         PlayerAnimation();
 
         CoolTimeSet();
-       
+
     }
 
 
@@ -106,6 +109,12 @@ public class Player_Controller : MonoBehaviour
         currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -CameraRotationLimit, CameraRotationLimit); //카메라 상하의 움직임을 일정 각도이상으로 안꺽이게 제한
 
         MainCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f); //위에서 구한 값으로 카메라 각도를 변경
+        if(Player_State == (int)State.is_Sit)
+        {
+            Flashlight.transform.localEulerAngles = new Vector3(10f, currentCameraRotationX - 30, -30f); //위에서 구한 값으로 플래쉬의 각도도 변경하지만 앉아있을 경우 손전등이 아래를 향하기에 그 각도만큼 보정해준다.
+        }
+        else 
+            Flashlight.transform.localEulerAngles = new Vector3(0f, currentCameraRotationX, -10f); //위에서 구한 값으로 플래쉬의 각도도 변경한다
     }
 
 
