@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player_Controller : MonoBehaviour
 {
@@ -28,7 +29,13 @@ public class Player_Controller : MonoBehaviour
     public float CameraRotationLimit = 60; // 카메라의 상하 각도를 제한하는 값
     private float currentCameraRotationX = 5; //카메라 x축의 회전값
 
-    public GameObject head;
+    [Header ("레이캐스트 속성")]
+    private RaycastHit Hit;
+    private GameObject HitObj; //충돌할 오브젝트를 저장할 변수
+    public float MaxDistance = 5f; //레이캐스트의 거리
+    public Text RayCastText; //레이캐스트가 충돌했을때 나타날 텍스트
+
+
     public GameObject Flashlight;
 
 
@@ -36,10 +43,11 @@ public class Player_Controller : MonoBehaviour
     private Animator Animator; //플레이어의 애니메이터
     private Vector3 Movedir; // 플레아어가 움직이는 방향
 
-    
+    /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
     private float CoolTime;
-    private float SetCooltime = 0.6f; // 점프쿨타임을 0.6초로 설정
+    private float SetCooltime = 0.6f; // 쿨타임을 0.6초로 설정
+    /////////////////////////////////
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
@@ -53,6 +61,7 @@ public class Player_Controller : MonoBehaviour
         PlayerRotation(); // 플레이어 좌우 움직임 함수
         CameraRotation(); //1인칭 카메라 상하 움직임 함수
 
+        RayCastFunction();
         PlayerAnimation();
 
         CoolTimeSet();
@@ -189,6 +198,44 @@ public class Player_Controller : MonoBehaviour
         Animator.SetFloat("HorizontalSpeed", Input.GetAxis("Horizontal")); //애니메이션에 있는 HorizontalSpeed변수에 좌우 방향키 입력전달
         Animator.SetInteger("PlayerState", Player_State); // 현재상태 변수 전달
         
+    }
+
+
+    void RayCastFunction()
+    {
+        
+        Debug.DrawRay(MainCamera.transform.position, MainCamera.transform.forward * MaxDistance, Color.blue, 0.3f);
+        if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance))
+        {
+            if (Hit.transform.tag == "Door") // 현재 보고있는 것이 문일경우?
+            {
+                Debug.Log("문임");
+                HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
+                Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
+                if (Hit.transform.GetComponent<DoorController>().is_open)
+                {
+                    RayCastText.text = "문닫기(E)";
+                }
+                else
+                    RayCastText.text = "문열기(E)";
+            }
+
+        }
+        if(Hit.transform == null) //충돌한 물체가 없을경우?
+        {
+            if(HitObj != null) // 만약 충돌했던 물체가 있을경우?
+            {
+                if (HitObj.tag == "Door") //충돌했던 물체가 문일경우?
+                {
+                    HitObj.transform.GetComponent<DoorController>().PossibleState = false; //문의 컨트롤을 끈다.
+                }
+
+                HitObj = null;
+                RayCastText.text = " ";
+            }
+           
+        }
+
     }
 
     void CoolTimeSet()
