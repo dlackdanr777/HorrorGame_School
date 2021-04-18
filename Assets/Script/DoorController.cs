@@ -9,6 +9,11 @@ public class DoorController : MonoBehaviour
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
 
+    [Header ("소리 관련 변수")]
+    private AudioSource Audio;
+    public AudioClip OpenSound;
+    public AudioClip CloseSound;
+
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
     private float CoolTime;
@@ -18,6 +23,8 @@ public class DoorController : MonoBehaviour
     float x;
     private void Start()
     {
+        Audio = GetComponent<AudioSource>();
+        Audio.volume = 0.5f; //문 사운드볼륨을 0.5로 지정
     }
 
     private void FixedUpdate()
@@ -84,8 +91,20 @@ public class DoorController : MonoBehaviour
                 if (!SetTrigger)
                 {
                     SetTrigger = true;
+                    if (is_open) // 만약 열린 문이라면?
+                    {
+                        Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
+                        Audio.Play();
+                    }
+                    else
+                    {
+                        Audio.clip = OpenSound; // 닫히는 문 사운드를 재생
+                        Audio.Play();
+                    }
                     is_open = !is_open;
-                    Debug.Log(is_open);
+
+
+
                 }
 
             }
