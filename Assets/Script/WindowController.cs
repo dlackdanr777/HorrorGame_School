@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorController : MonoBehaviour
+public class WindowController : MonoBehaviour
 {
+
     [HideInInspector]
     public bool is_open = false; //문이 열렸는지 아닌지를 입력받는 변수
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
-    
-    public bool is_Lock = false; //문이 잠겼는지 아닌지를 입력받는 변수
 
-    [Header ("소리 관련 변수")]
+    
+    [Header("소리 관련 변수")]
     private AudioSource Audio;
     public AudioClip OpenSound;
     public AudioClip CloseSound;
-    public AudioClip SoundWhenLocked;
+    
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
@@ -27,7 +27,7 @@ public class DoorController : MonoBehaviour
     private void Start()
     {
         Audio = GetComponent<AudioSource>();
-        Audio.volume = 0.5f; //문 사운드볼륨을 0.5로 지정
+        Audio.volume = 0.4f; //문 사운드볼륨을 0.4로 지정
     }
 
     private void FixedUpdate()
@@ -50,7 +50,7 @@ public class DoorController : MonoBehaviour
             }
             else if (x < 0.3f)
             {
-                x += Time.deltaTime;
+                x += Time.deltaTime * 1.2f;
             }
             else if (x < 0.9f)
             {
@@ -95,33 +95,24 @@ public class DoorController : MonoBehaviour
                 {
                     SetTrigger = true;
 
-                    if (is_Lock) // 문이 잠겨있을 경우
+                    if (is_open) // 만약 열린 문이라면?
                     {
-                        Audio.clip = SoundWhenLocked; // 잠긴 문 사운드를 재생
+                        Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
                         Audio.Play();
                     }
-                    else // 문이 잠겨있지 않을경우
+                    else
                     {
-
-
-                        if (is_open) // 만약 열린 문이라면?
-                        {
-                            Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
-                            Audio.Play();
-                        }
-                        else
-                        {
-                            Audio.clip = OpenSound; // 닫히는 문 사운드를 재생
-                            Audio.Play();
-                        }
-                        is_open = !is_open;
-
+                        Audio.clip = OpenSound; // 닫히는 문 사운드를 재생
+                        Audio.Play();
                     }
+                    is_open = !is_open;
+
                 }
+
 
             }
         }
-       
+
     }
 
     void CoolTimeSet()

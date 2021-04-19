@@ -120,10 +120,10 @@ public class Player_Controller : MonoBehaviour
         MainCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f); //위에서 구한 값으로 카메라 각도를 변경
         if(Player_State == (int)State.is_Sit)
         {
-            Flashlight.transform.localEulerAngles = new Vector3(10f, currentCameraRotationX - 30, -30f); //위에서 구한 값으로 플래쉬의 각도도 변경하지만 앉아있을 경우 손전등이 아래를 향하기에 그 각도만큼 보정해준다.
+            Flashlight.transform.localEulerAngles = new Vector3(30f, currentCameraRotationX - 60, currentCameraRotationX * 0.2f -40f); //위에서 구한 값으로 플래쉬의 각도도 변경하지만 앉아있을 경우 손전등이 아래를 향하기에 그 각도만큼 보정해준다.
         }
         else 
-            Flashlight.transform.localEulerAngles = new Vector3(0f, currentCameraRotationX, -10f); //위에서 구한 값으로 플래쉬의 각도도 변경한다
+            Flashlight.transform.localEulerAngles = new Vector3(0f, currentCameraRotationX + 10f, currentCameraRotationX * 0.3f - 10f); //위에서 구한 값으로 플래쉬의 각도도 변경한다
     }
 
 
@@ -201,11 +201,11 @@ public class Player_Controller : MonoBehaviour
     }
 
 
-    void RayCastFunction()
+    void RayCastFunction() // 레이캐스트 관련 함수
     {
         
         Debug.DrawRay(MainCamera.transform.position, MainCamera.transform.forward * MaxDistance, Color.blue, 0.3f);
-        if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance))
+        if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance)) // 앞에 레이케스트를 쏜다.
         {
             if (Hit.transform.tag == "Door") // 현재 보고있는 것이 문일경우?
             {
@@ -219,15 +219,31 @@ public class Player_Controller : MonoBehaviour
                 else
                     RayCastText.text = "문열기(E)";
             }
+            else if(Hit.transform.tag == "Window") // 현재 보고있는 것이 창문일경우?
+            {
+                Debug.Log("창문임");
+                HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
+                Hit.transform.GetComponent<WindowController>().PossibleState = true; // 사용가능한 창문일경우 컨트롤가능한 상태로 변경한다.
+                if (Hit.transform.GetComponent<WindowController>().is_open)
+                {
+                    RayCastText.text = "창문닫기(E)";
+                }
+                else
+                    RayCastText.text = "창문열기(E)";
+            }
 
         }
-        if(Hit.transform == null) //충돌한 물체가 없을경우?
+        if(Hit.transform == null || Hit.transform != HitObj.transform) //충돌한 물체가 없거나 충돌물체가 바뀔경우?
         {
             if(HitObj != null) // 만약 충돌했던 물체가 있을경우?
             {
                 if (HitObj.tag == "Door") //충돌했던 물체가 문일경우?
                 {
                     HitObj.transform.GetComponent<DoorController>().PossibleState = false; //문의 컨트롤을 끈다.
+                }
+                else if(HitObj.tag == "Window")
+                {
+                    HitObj.transform.GetComponent<WindowController>().PossibleState = false; //문의 컨트롤을 끈다.
                 }
 
                 HitObj = null;
