@@ -234,6 +234,20 @@ public class Player_Controller : MonoBehaviour
                     RayCastText.text = "창문열기(E)";
             }
 
+            else if(Hit.transform.tag == "LightButton") //현재 보고있는 것이 조명 버튼일 경우
+            {
+                HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
+                Hit.transform.GetComponent<LightController>().PossibleState = true; // 사용가능한 창문일경우 컨트롤가능한 상태로 변경한다.
+                if (Hit.transform.GetComponent<LightController>().is_TurnOn)
+                {
+                    RayCastText.text = "조명끄기(E)";
+                }
+                else
+                {
+                    RayCastText.text = "조명켜기(E)";
+                }
+            }
+
         }
         if(Hit.transform == null) //충돌한 물체가 없을 경우?
         {
@@ -246,6 +260,10 @@ public class Player_Controller : MonoBehaviour
                 else if(HitObj.tag == "Window")
                 {
                     HitObj.transform.GetComponent<WindowController>().PossibleState = false; //문의 컨트롤을 끈다.
+                }
+                else if(HitObj.tag == "LightButton")
+                {
+                    HitObj.transform.GetComponent<LightController>().PossibleState = false; //문의 컨트롤을 끈다.
                 }
 
                 HitObj = null;

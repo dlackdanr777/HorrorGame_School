@@ -7,6 +7,7 @@ TagManager:
   - Floor
   - Door
   - Window
+  - LightButton
   layers:
   - Default
   - TransparentFX
