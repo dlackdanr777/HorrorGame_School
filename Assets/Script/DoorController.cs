@@ -10,6 +10,13 @@ public class DoorController : MonoBehaviour
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
     
     public bool is_Lock = false; //문이 잠겼는지 아닌지를 입력받는 변수
+    public bool is_HingedDoor = false; //여닫이문인지 아닌지를 입력받는 변수
+
+    //여닫이문 관련 변수
+    private float doorOpenAngle = -90f; //열었을때 각도
+    private float doorCloseAngle = 0f; //닫혔을때 각도
+    private float smoot = 2.5f;
+
 
     [Header ("소리 관련 변수")]
     private AudioSource Audio;
@@ -29,7 +36,8 @@ public class DoorController : MonoBehaviour
     private void Start()
     {
         Audio = GetComponent<AudioSource>();
-        Audio.volume = 0.5f; //문 사운드볼륨을 0.5로 지정
+
+        Audio.volume = 0.4f; //문 사운드볼륨을 0.5로 지정
     }
 
     private void FixedUpdate()
@@ -43,48 +51,65 @@ public class DoorController : MonoBehaviour
 
     void OpenTheDoor()
     {
-
-        if (is_open) // 만약 문이 열렸다면?
+        if (is_HingedDoor) // 여닫이문 일경우?
         {
-            if (x < 0.1f)
+            if (is_open) //여닫이문이 열렸다면?
             {
-                x += Time.deltaTime * 0.5f;
+                Quaternion targetRotation = Quaternion.Euler(0, doorOpenAngle, 0);
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smoot * Time.deltaTime);
             }
-            else if (x < 0.3f)
+            else //닫혔다면?
             {
-                x += Time.deltaTime;
+                Quaternion targetRotation2 = Quaternion.Euler(0, doorCloseAngle, 0);
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation2, smoot * Time.deltaTime);
+
             }
-            else if (x < 0.9f)
-            {
-                x += Time.deltaTime * 1.5f;
-            }
-            else if (x > 0.9f)
-            {
-                x = 0.9f;
-            }
-            // 문이 열릴수록 속도가 증가하다 0.9를 넘으면 0.9로 고정
         }
-        else if (!is_open) // 만약 문이 닫혔다면?
+        else //미닫이 문 일경우?
         {
-            if (x > 0.8f)
-            {
-                x -= Time.deltaTime * 0.5f;
-            }
-            else if (x > 0.6f)
-            {
-                x -= Time.deltaTime;
-            }
-            else if (x > 0)
-            {
-                x -= Time.deltaTime * 1.5f;
-            }
-            else if (x < 0)
-            {
-                x = 0f;
-            }
-        } // 문이 닫힐 수록 속도가 증가하다 0아래로 내려가면 0으로 고정한다.
 
-        transform.localPosition = new Vector3(x, 0f, 0f); // 오브젝트의 위치가 0,0,0이 될수있도록 보정한 값에 위에서 구한 x를 추가한다.
+            if (is_open) // 만약 문이 열렸다면?
+            {
+                if (x < 0.1f)
+                {
+                    x += Time.deltaTime * 0.5f;
+                }
+                else if (x < 0.3f)
+                {
+                    x += Time.deltaTime;
+                }
+                else if (x < 0.9f)
+                {
+                    x += Time.deltaTime * 1.5f;
+                }
+                else if (x > 0.9f)
+                {
+                    x = 0.9f;
+                }
+                // 문이 열릴수록 속도가 증가하다 0.9를 넘으면 0.9로 고정
+            }
+            else if (!is_open) // 만약 문이 닫혔다면?
+            {
+                if (x > 0.8f)
+                {
+                    x -= Time.deltaTime * 0.5f;
+                }
+                else if (x > 0.6f)
+                {
+                    x -= Time.deltaTime;
+                }
+                else if (x > 0)
+                {
+                    x -= Time.deltaTime * 1.5f;
+                }
+                else if (x < 0)
+                {
+                    x = 0f;
+                }
+            } // 문이 닫힐 수록 속도가 증가하다 0아래로 내려가면 0으로 고정한다.
+
+            transform.localPosition = new Vector3(x, 0f, 0f); // 오브젝트의 위치가 0,0,0이 될수있도록 보정한 값에 위에서 구한 x를 추가한다.
+        }
     }
 
     void DoorControll()

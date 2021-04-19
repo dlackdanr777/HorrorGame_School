@@ -11,7 +11,7 @@ public class WindowController : MonoBehaviour
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
 
     public bool is_right; //오른쪽 창문인지 아닌지를 받는 변수
-    public WindowController Window2Controller; // 반대쪽 창문의 컴포넌트를 받아온다
+    private WindowController Window2Controller; // 반대쪽 창문의 컴포넌트를 받아온다
     public GameObject Window2; // 반대쪽 창문의 오브젝트를 받는 변수
     
     [Header("소리 관련 변수")]

@@ -20,11 +20,11 @@ public class FootStepSound : MonoBehaviour
     {
         if(Player.Player_State == (int)Player_Controller.State.is_Sit) // 플레이어가 앉아있을 경우
         {
-            Audio.volume = 0.2f;
+            Audio.volume = 0.1f;
         }
         else if(Player.Player_State == (int)Player_Controller.State.is_Walk || Player.Player_State == (int)Player_Controller.State.is_Stop) // 플레이어가 걷거나 서있을 경우?
         {
-            Audio.volume = 0.5f;
+            Audio.volume = 0.4f;
         }
         
         else if(Player.Player_State == (int)Player_Controller.State.is_Run)

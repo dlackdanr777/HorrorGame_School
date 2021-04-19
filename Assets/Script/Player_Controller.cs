@@ -32,7 +32,7 @@ public class Player_Controller : MonoBehaviour
     [Header ("레이캐스트 속성")]
     private RaycastHit Hit;
     private GameObject HitObj; //충돌할 오브젝트를 저장할 변수
-    public float MaxDistance = 5f; //레이캐스트의 거리
+    public float MaxDistance = 2f; //레이캐스트의 거리
     public Text RayCastText; //레이캐스트가 충돌했을때 나타날 텍스트
 
 
