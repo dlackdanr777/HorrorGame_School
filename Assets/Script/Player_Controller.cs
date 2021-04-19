@@ -179,14 +179,14 @@ public class Player_Controller : MonoBehaviour
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
             Controller.height = 1.3f; // 캐릭터의 높이를 1.3로 낮춤
-            Controller.center = new Vector3(0f, 0.7f, 0.1f); //콜라이더의 중심점을 0.7로 낮춤
-            Controller.radius = 0.6f;
+            Controller.center = new Vector3(0f, 0.7f, 0.2f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.4f;
         }
         else
         {
             Controller.height = 1.7f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.9f, 0f); //콜라이더의 중심점을 0.9로 올림
-            Controller.radius = 0.5f;
+            Controller.center = new Vector3(0f, 0.9f, 0.15f); //콜라이더의 중심점을 0.9로 올림
+            Controller.radius = 0.3f;
         }
 
 
@@ -209,10 +209,13 @@ public class Player_Controller : MonoBehaviour
         {
             if (Hit.transform.tag == "Door") // 현재 보고있는 것이 문일경우?
             {
-                Debug.Log("문임");
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
                 Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
-                if (Hit.transform.GetComponent<DoorController>().is_open)
+                if (Hit.transform.GetComponent<DoorController>().is_Lock)
+                {
+                    RayCastText.text = "잠김(E)";
+                }
+                else if (Hit.transform.GetComponent<DoorController>().is_open)
                 {
                     RayCastText.text = "문닫기(E)";
                 }
@@ -221,10 +224,9 @@ public class Player_Controller : MonoBehaviour
             }
             else if(Hit.transform.tag == "Window") // 현재 보고있는 것이 창문일경우?
             {
-                Debug.Log("창문임");
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
                 Hit.transform.GetComponent<WindowController>().PossibleState = true; // 사용가능한 창문일경우 컨트롤가능한 상태로 변경한다.
-                if (Hit.transform.GetComponent<WindowController>().is_open)
+                if (Hit.transform.GetComponent<WindowController>().is_open || Hit.transform.GetComponent<WindowController>().Window2.GetComponent<WindowController>().is_open)
                 {
                     RayCastText.text = "창문닫기(E)";
                 }
@@ -233,7 +235,7 @@ public class Player_Controller : MonoBehaviour
             }
 
         }
-        if(Hit.transform == null || Hit.transform != HitObj.transform) //충돌한 물체가 없거나 충돌물체가 바뀔경우?
+        if(Hit.transform == null) //충돌한 물체가 없을 경우?
         {
             if(HitObj != null) // 만약 충돌했던 물체가 있을경우?
             {
@@ -251,7 +253,6 @@ public class Player_Controller : MonoBehaviour
             }
            
         }
-
     }
 
     void CoolTimeSet()

@@ -19,7 +19,9 @@ public class DoorController : MonoBehaviour
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
+    private bool ResetTrigger = false;
     private float CoolTime;
+    private float ResetCoolTime; //리셋 쿨타임
     private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     /// ///////////////////////////////////
 
@@ -133,6 +135,29 @@ public class DoorController : MonoBehaviour
             {
                 CoolTime = 0;
                 SetTrigger = false;
+            }
+        }
+    }
+
+
+    void DataReset() //컨트롤을 초기화하는 함수
+    {
+        if (PossibleState && !ResetTrigger) // 컨트롤 가능하고 리셋트리거가 작동되지않았을때
+        {
+            ResetTrigger = true; //리셋트리거를 작동시킨다.
+
+        }
+
+        else if (ResetTrigger) //리셋트리거가 작동 했을 때
+        {
+
+            ResetCoolTime += Time.deltaTime; //숫자를 센다
+            Debug.Log(ResetCoolTime);
+            if (ResetCoolTime > 0.2f) //지정한 쿨타임 시간이 지나면
+            {
+                ResetTrigger = false; //리셋트리거를 끈다
+                ResetCoolTime = 0f; //시간을 초기화
+                PossibleState = false; //컨트롤 가능한 상태를 끈다.
             }
         }
     }
