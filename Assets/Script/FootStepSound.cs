@@ -39,5 +39,6 @@ public class FootStepSound : MonoBehaviour
             Audio.Play();
             Debug.Log("발소리");
         }
+
     }
 }

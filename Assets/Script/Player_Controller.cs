@@ -179,14 +179,14 @@ public class Player_Controller : MonoBehaviour
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
             Controller.height = 1.3f; // 캐릭터의 높이를 1.3로 낮춤
-            Controller.center = new Vector3(0f, 0.7f, 0.2f); //콜라이더의 중심점을 0.7로 낮춤
-            Controller.radius = 0.4f;
+            Controller.center = new Vector3(0f, 0.7f, 0.25f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.45f;
         }
         else
         {
             Controller.height = 1.7f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.9f, 0.15f); //콜라이더의 중심점을 0.9로 올림
-            Controller.radius = 0.3f;
+            Controller.center = new Vector3(0f, 0.9f, 0.2f); //콜라이더의 중심점을 0.9로 올림
+            Controller.radius = 0.35f;
         }
 
 

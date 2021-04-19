@@ -178,7 +178,7 @@ public class DoorController : MonoBehaviour
 
             ResetCoolTime += Time.deltaTime; //숫자를 센다
             Debug.Log(ResetCoolTime);
-            if (ResetCoolTime > 0.2f) //지정한 쿨타임 시간이 지나면
+            if (ResetCoolTime > 0.1f) //지정한 쿨타임 시간이 지나면
             {
                 ResetTrigger = false; //리셋트리거를 끈다
                 ResetCoolTime = 0f; //시간을 초기화
