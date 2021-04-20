@@ -27,7 +27,7 @@ public class LightController : MonoBehaviour
     private void Start()
     {
         Sound = GetComponent<AudioSource>();
-        Sound.volume = 0.3f;
+        Sound.volume = 0.5f;
         LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0));
     }
 
