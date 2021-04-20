@@ -1,24 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+public enum DoorState
+{
+    SlidingDoor,
+    OneDoor,
+    TwoDoor,   
+}
 public class DoorController : MonoBehaviour
 {
+
+
     [HideInInspector]
     public bool is_open = false; //문이 열렸는지 아닌지를 입력받는 변수
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
+
     
     public bool is_Lock = false; //문이 잠겼는지 아닌지를 입력받는 변수
-    public bool is_HingedDoor = false; //여닫이문인지 아닌지를 입력받는 변수
-
+    public bool is_Right = false; //오른쪽 문인지 아닌지 받는 변수(원도어일때만 작동)
     //여닫이문 관련 변수
-    private float doorOpenAngle = -90f; //열었을때 각도
+    private float doorOpenAngle = 90f; //열었을때 각도
     private float doorCloseAngle = 0f; //닫혔을때 각도
     private float smoot = 2.5f;
 
+    [Header("문 관련 변수")]
+    public DoorState State;
 
-    [Header ("소리 관련 변수")]
+
+    [Space]
     private AudioSource Audio;
     public AudioClip OpenSound;
     public AudioClip CloseSound;
@@ -32,11 +42,11 @@ public class DoorController : MonoBehaviour
     private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     /// ///////////////////////////////////
 
+    private Quaternion targetRotation; // 여닫이문의 변수
     float x;
     private void Start()
     {
         Audio = GetComponent<AudioSource>();
-
         Audio.volume = 0.4f; //문 사운드볼륨을 0.5로 지정
     }
 
@@ -52,23 +62,8 @@ public class DoorController : MonoBehaviour
 
     void OpenTheDoor()
     {
-        if (is_HingedDoor) // 여닫이문 일경우?
+        if (State == DoorState.SlidingDoor) // 미닫이문 일경우?
         {
-            if (is_open) //여닫이문이 열렸다면?
-            {
-                Quaternion targetRotation = Quaternion.Euler(0, doorOpenAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smoot * Time.deltaTime);
-            }
-            else //닫혔다면?
-            {
-                Quaternion targetRotation2 = Quaternion.Euler(0, doorCloseAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation2, smoot * Time.deltaTime);
-
-            }
-        }
-        else //미닫이 문 일경우?
-        {
-
             if (is_open) // 만약 문이 열렸다면?
             {
                 if (x < 0.1f)
@@ -110,7 +105,36 @@ public class DoorController : MonoBehaviour
             } // 문이 닫힐 수록 속도가 증가하다 0아래로 내려가면 0으로 고정한다.
 
             transform.localPosition = new Vector3(x, 0f, 0f); // 오브젝트의 위치가 0,0,0이 될수있도록 보정한 값에 위에서 구한 x를 추가한다.
+
+
+            
         }
+        else if (State == DoorState.OneDoor) //여닫이 문 일경우?
+        {
+            if (is_open) //여닫이문이 열렸다면?
+            {
+                if (is_Right) //오른쪽 문이였다면?
+                {
+                    targetRotation = Quaternion.Euler(0, doorOpenAngle, 0);
+                }
+                else
+                {
+                    targetRotation = Quaternion.Euler(0, -doorOpenAngle, 0);
+                }
+
+
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smoot * Time.deltaTime);
+
+            }
+            else //닫혔다면?
+            {
+                Quaternion targetRotation2 = Quaternion.Euler(0, doorCloseAngle, 0);
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation2, smoot * Time.deltaTime);
+
+            }
+
+        }
+
     }
 
     void DoorControll()
