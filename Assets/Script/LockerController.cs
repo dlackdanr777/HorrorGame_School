@@ -2,27 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorController : MonoBehaviour
+public class LockerController : MonoBehaviour
 {
     [HideInInspector]
     public bool is_open = false; //문이 열렸는지 아닌지를 입력받는 변수
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
-    
-    public bool is_Lock = false; //문이 잠겼는지 아닌지를 입력받는 변수
-    public bool is_HingedDoor = false; //여닫이문인지 아닌지를 입력받는 변수
 
-    //여닫이문 관련 변수
-    private float doorOpenAngle = -90f; //열었을때 각도
-    private float doorCloseAngle = 0f; //닫혔을때 각도
-    private float smoot = 2.5f;
+    public bool is_right; //오른쪽 창문인지 아닌지를 받는 변수
+    public bool is_Lock; //잠겼는지 아닌지를 받는 변수
+    private LockerController Locker2Controller; // 반대쪽 창문의 컴포넌트를 받아온다
+    public GameObject Locker2; // 반대쪽 창문의 오브젝트를 받는 변수
 
-
-    [Header ("소리 관련 변수")]
+    [Header("소리 관련 변수")]
     private AudioSource Audio;
     public AudioClip OpenSound;
     public AudioClip CloseSound;
-    public AudioClip SoundWhenLocked;
+
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
@@ -36,8 +32,8 @@ public class DoorController : MonoBehaviour
     private void Start()
     {
         Audio = GetComponent<AudioSource>();
-
-        Audio.volume = 0.4f; //문 사운드볼륨을 0.5로 지정
+        Locker2Controller = Locker2.GetComponent<LockerController>();
+        Audio.volume = 0.4f; //문 사운드볼륨을 0.4로 지정
     }
 
     private void FixedUpdate()
@@ -46,71 +42,57 @@ public class DoorController : MonoBehaviour
         OpenTheDoor();
 
 
-        CoolTimeSet();
+        CoolTimeSet(); //문의 쿨타임
         DataReset();
     }
 
     void OpenTheDoor()
     {
-        if (is_HingedDoor) // 여닫이문 일경우?
-        {
-            if (is_open) //여닫이문이 열렸다면?
-            {
-                Quaternion targetRotation = Quaternion.Euler(0, doorOpenAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smoot * Time.deltaTime);
-            }
-            else //닫혔다면?
-            {
-                Quaternion targetRotation2 = Quaternion.Euler(0, doorCloseAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation2, smoot * Time.deltaTime);
 
+        if (is_open) // 만약 문이 열렸다면?
+        {
+            if (x < 0.1f)
+            {
+                x += Time.deltaTime * 0.5f;
             }
+            else if (x < 0.2f)
+            {
+                x += Time.deltaTime * 1.2f;
+            }
+            else if (x < 0.5f)
+            {
+                x += Time.deltaTime * 1.5f;
+            }
+            else if (x > 0.5f)
+            {
+                x = 0.5f;
+            }
+            // 문이 열릴수록 속도가 증가하다 0.9를 넘으면 0.9로 고정
         }
-        else //미닫이 문 일경우?
+        else if (!is_open) // 만약 문이 닫혔다면?
         {
-
-            if (is_open) // 만약 문이 열렸다면?
+            if (x > 0.8f)
             {
-                if (x < 0.1f)
-                {
-                    x += Time.deltaTime * 0.5f;
-                }
-                else if (x < 0.3f)
-                {
-                    x += Time.deltaTime;
-                }
-                else if (x < 0.9f)
-                {
-                    x += Time.deltaTime * 1.5f;
-                }
-                else if (x > 0.9f)
-                {
-                    x = 0.9f;
-                }
-                // 문이 열릴수록 속도가 증가하다 0.9를 넘으면 0.9로 고정
+                x -= Time.deltaTime * 0.5f;
             }
-            else if (!is_open) // 만약 문이 닫혔다면?
+            else if (x > 0.6f)
             {
-                if (x > 0.8f)
-                {
-                    x -= Time.deltaTime * 0.5f;
-                }
-                else if (x > 0.6f)
-                {
-                    x -= Time.deltaTime;
-                }
-                else if (x > 0)
-                {
-                    x -= Time.deltaTime * 1.5f;
-                }
-                else if (x < 0)
-                {
-                    x = 0f;
-                }
-            } // 문이 닫힐 수록 속도가 증가하다 0아래로 내려가면 0으로 고정한다.
+                x -= Time.deltaTime;
+            }
+            else if (x > 0)
+            {
+                x -= Time.deltaTime * 1.5f;
+            }
+            else if (x < 0)
+            {
+                x = 0f;
+            }
+        } // 문이 닫힐 수록 속도가 증가하다 0아래로 내려가면 0으로 고정한다.
 
+        if (is_right) //오른쪽 창문일경우
             transform.localPosition = new Vector3(x, 0f, 0f); // 오브젝트의 위치가 0,0,0이 될수있도록 보정한 값에 위에서 구한 x를 추가한다.
-        }
+        else //아닐경우
+            transform.localPosition = new Vector3(-x, 0f, 0f);
     }
 
     void DoorControll()
@@ -122,34 +104,38 @@ public class DoorController : MonoBehaviour
                 if (!SetTrigger)
                 {
                     SetTrigger = true;
+                    Locker2Controller.SetTrigger = true; //반대 문도 쿨타임을 적용시킨다.
 
-                    if (is_Lock) // 문이 잠겨있을 경우
+                    if (is_open) // 만약 열린 문이라면?
                     {
-                        Audio.clip = SoundWhenLocked; // 잠긴 문 사운드를 재생
+                        Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
                         Audio.Play();
+                        is_open = !is_open;
                     }
-                    else // 문이 잠겨있지 않을경우
+                    else
                     {
-
-
-                        if (is_open) // 만약 열린 문이라면?
+                        if (Locker2Controller.is_open)
                         {
                             Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
                             Audio.Play();
+                            Locker2Controller.is_open = false;
                         }
                         else
                         {
                             Audio.clip = OpenSound; // 닫히는 문 사운드를 재생
                             Audio.Play();
+                            is_open = !is_open;
                         }
-                        is_open = !is_open;
 
                     }
+
+
                 }
+
 
             }
         }
-       
+
     }
 
     void CoolTimeSet()
@@ -164,7 +150,6 @@ public class DoorController : MonoBehaviour
             }
         }
     }
-
 
     void DataReset() //컨트롤을 초기화하는 함수
     {

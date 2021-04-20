@@ -47,12 +47,15 @@ public class Player_Controller : MonoBehaviour
     private bool SetTrigger = false;
     private float CoolTime;
     private float SetCooltime = 0.6f; // 쿨타임을 0.6초로 설정
+
+    private int layerMask; //레이어 마스크를 지정한다.(레이케스트)
     /////////////////////////////////
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
         Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
+        layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
     }
 
     private void FixedUpdate()
@@ -153,8 +156,6 @@ public class Player_Controller : MonoBehaviour
                     Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
             }
             
-
-            Debug.Log("1");
         }
 
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
@@ -178,15 +179,15 @@ public class Player_Controller : MonoBehaviour
 
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
-            Controller.height = 1.3f; // 캐릭터의 높이를 1.3로 낮춤
-            Controller.center = new Vector3(0f, 0.7f, 0.25f); //콜라이더의 중심점을 0.7로 낮춤
-            Controller.radius = 0.45f;
+            Controller.height = 1.2f; // 캐릭터의 높이를 1.3로 낮춤
+            Controller.center = new Vector3(0f, 0.65f, 0.25f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.35f;
         }
         else
         {
-            Controller.height = 1.7f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.9f, 0.2f); //콜라이더의 중심점을 0.9로 올림
-            Controller.radius = 0.35f;
+            Controller.height = 1.6f; // 캐릭터의 높이를 1.7로 올림
+            Controller.center = new Vector3(0f, 0.85f, 0.18f); //콜라이더의 중심점을 0.9로 올림
+            Controller.radius = 0.25f;
         }
 
 
@@ -205,33 +206,55 @@ public class Player_Controller : MonoBehaviour
     {
         
         Debug.DrawRay(MainCamera.transform.position, MainCamera.transform.forward * MaxDistance, Color.blue, 0.3f);
-        if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance)) // 앞에 레이케스트를 쏜다.
+        if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance,layerMask)) // 앞에 레이케스트를 쏜다.
         {
             if (Hit.transform.tag == "Door") // 현재 보고있는 것이 문일경우?
             {
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
-                Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
-                if (Hit.transform.GetComponent<DoorController>().is_Lock)
+                if(Hit.transform.GetComponent<DoorController>() != null) //만약 도어컨트롤러가 있는 오브젝트일경우
                 {
-                    RayCastText.text = "잠김(E)";
+                    Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
+                    if (Hit.transform.GetComponent<DoorController>().is_Lock)
+                    {
+                        RayCastText.text = "잠김(E)";
+                    }
+                    else if (Hit.transform.GetComponent<DoorController>().is_open)
+                    {
+                        RayCastText.text = "닫기(E)";
+                    }
+                    else
+                        RayCastText.text = "열기(E)";
                 }
-                else if (Hit.transform.GetComponent<DoorController>().is_open)
+                else if(Hit.transform.GetComponent<LockerController>() != null) // 만약 로커 오브젝트일경우
                 {
-                    RayCastText.text = "문닫기(E)";
+                    Hit.transform.GetComponent<LockerController>().PossibleState = true; // 사용가능한 로커일경우 컨트롤가능한 상태로 변경한다.
+                    if (Hit.transform.GetComponent<LockerController>().is_Lock)
+                    {
+                        RayCastText.text = "잠김(E)";
+                    }
+                    else if (Hit.transform.GetComponent<LockerController>().is_open)
+                    {
+                        RayCastText.text = "닫기(E)";
+                    }
+                    else
+                        RayCastText.text = "열기(E)";
                 }
-                else
-                    RayCastText.text = "문열기(E)";
+
+                
+                
             }
+
+
             else if(Hit.transform.tag == "Window") // 현재 보고있는 것이 창문일경우?
             {
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
                 Hit.transform.GetComponent<WindowController>().PossibleState = true; // 사용가능한 창문일경우 컨트롤가능한 상태로 변경한다.
                 if (Hit.transform.GetComponent<WindowController>().is_open || Hit.transform.GetComponent<WindowController>().Window2.GetComponent<WindowController>().is_open)
                 {
-                    RayCastText.text = "창문닫기(E)";
+                    RayCastText.text = "닫기(E)";
                 }
                 else
-                    RayCastText.text = "창문열기(E)";
+                    RayCastText.text = "열기(E)";
             }
 
             else if(Hit.transform.tag == "LightButton") //현재 보고있는 것이 조명 버튼일 경우
@@ -248,14 +271,30 @@ public class Player_Controller : MonoBehaviour
                 }
             }
 
+            else //만약 아무것도 해당되지 않는다면?
+            {
+                HitObj = null;
+                RayCastText.text = " ";
+            }
         }
+
+
         if(Hit.transform == null) //충돌한 물체가 없을 경우?
         {
             if(HitObj != null) // 만약 충돌했던 물체가 있을경우?
             {
                 if (HitObj.tag == "Door") //충돌했던 물체가 문일경우?
                 {
-                    HitObj.transform.GetComponent<DoorController>().PossibleState = false; //문의 컨트롤을 끈다.
+                    if(HitObj.transform.GetComponent<DoorController>() != null)
+                    {
+                        HitObj.transform.GetComponent<DoorController>().PossibleState = false; //문의 컨트롤을 끈다.
+                    }
+                    else if(HitObj.transform.GetComponent<LockerController>() != null)
+                    {
+                        HitObj.transform.GetComponent<LockerController>().PossibleState = false; //문의 컨트롤을 끈다.
+                    }
+                    
+
                 }
                 else if(HitObj.tag == "Window")
                 {
@@ -266,11 +305,11 @@ public class Player_Controller : MonoBehaviour
                     HitObj.transform.GetComponent<LightController>().PossibleState = false; //문의 컨트롤을 끈다.
                 }
 
-                HitObj = null;
-                RayCastText.text = " ";
             }
-           
+            HitObj = null;
+            RayCastText.text = " ";
         }
+
     }
 
     void CoolTimeSet()

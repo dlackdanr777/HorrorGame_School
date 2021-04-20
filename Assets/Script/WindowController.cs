@@ -104,6 +104,7 @@ public class WindowController : MonoBehaviour
                 if (!SetTrigger)
                 {
                     SetTrigger = true;
+                    Window2Controller.SetTrigger = true; //반대 문도 쿨타임을 적용시킨다.
 
                     if (is_open) // 만약 열린 문이라면?
                     {
@@ -115,6 +116,8 @@ public class WindowController : MonoBehaviour
                     {
                         if (Window2Controller.is_open)
                         {
+                            Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
+                            Audio.Play();
                             Window2Controller.is_open = false;
                         }
                         else

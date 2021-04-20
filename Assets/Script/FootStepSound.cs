@@ -9,11 +9,13 @@ public class FootStepSound : MonoBehaviour
 
     [Header ("발소리 음원")]
     public AudioClip[] FootSound = new AudioClip[3]; //발소리를 여러개 받는다
+    public AudioClip[] FootSound_Wooden = new AudioClip[3]; //나무 바닥재 발소리를 여러개 받는다.
 
     private void Start()
     {
         Player = transform.root.gameObject.GetComponent<Player_Controller>();
         Audio = GetComponent<AudioSource>();
+        Audio.pitch = 0.9f;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -37,7 +39,12 @@ public class FootStepSound : MonoBehaviour
             int random = Random.Range(0, FootSound.Length); 
             Audio.clip = FootSound[random];
             Audio.Play();
-            Debug.Log("발소리");
+        }
+        if (other.gameObject.tag == "WoodenFloor") //바닥이 나무바닥일경우
+        {
+            int random = Random.Range(0, FootSound_Wooden.Length);
+            Audio.clip = FootSound_Wooden[random];
+            Audio.Play();
         }
 
     }
