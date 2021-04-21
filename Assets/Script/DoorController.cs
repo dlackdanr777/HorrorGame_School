@@ -48,6 +48,11 @@ public class DoorController : MonoBehaviour
     {
         Audio = GetComponent<AudioSource>();
         Audio.volume = 0.4f; //문 사운드볼륨을 0.5로 지정
+
+        if(State == DoorState.OneDoor) //여닫이 문일경우
+        {
+            Audio.pitch = 0.72f;
+        }
     }
 
     private void FixedUpdate()

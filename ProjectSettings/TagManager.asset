@@ -9,6 +9,7 @@ TagManager:
   - Window
   - LightButton
   - WoodenFloor
+  - ImportantObj
   layers:
   - Default
   - TransparentFX

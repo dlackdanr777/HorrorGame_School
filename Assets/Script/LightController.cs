@@ -10,6 +10,7 @@ public class LightController : MonoBehaviour
     public bool PossibleState = false; //현재 조명이 컨트롤 가능한 상태인지 입력받는 변수
 
     [Header ("형광등 관련 변수")]
+    public bool Noton = false; //작동 안되는 형광등의 경우 킨다.
     public GameObject[] FluorescentLamp = new GameObject[6]; //형광등 불빛6개를 받아옴
     public Material LampMaterial; //형광등 점멸효과를 위해 마테리얼을 받아옴
     private AudioSource Sound;
@@ -28,7 +29,11 @@ public class LightController : MonoBehaviour
     {
         Sound = GetComponent<AudioSource>();
         Sound.volume = 0.5f;
-        LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0));
+        if(LampMaterial != null) //마테리얼변수에 값이 담겨있을 경우만 실행
+        {
+            LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0));
+        }
+        
     }
 
 
@@ -50,41 +55,55 @@ public class LightController : MonoBehaviour
                 if (!SetTrigger) //쿨타임 온
                 {
                     SetTrigger = true;
-                    if (is_TurnOn)
+                    if (!Noton) //켜지는 상태일경우
                     {
-                        for (int i = 0; i < FluorescentLamp.Length; i++)
+                        if (is_TurnOn)
                         {
-                            FluorescentLamp[i].SetActive(false);
-                        }
-                        LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0) * 1f);
-                        Sound.clip = TurnOffSound;
-                        Sound.Play();
-                        
+                            for (int i = 0; i < FluorescentLamp.Length; i++)
+                            {
+                                FluorescentLamp[i].SetActive(false);
+                            }
+                            LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0) * 10f);
+                            Sound.clip = TurnOffSound;
+                            Sound.Play();
 
-                    }
-                    else
-                    {
-                        for (int i = 0; i < FluorescentLamp.Length; i++)
-                        {
-                            FluorescentLamp[i].SetActive(true);
+
                         }
-                        LampMaterial.SetColor("_EmissionColor", new Color(255, 255, 255) * 1f);
-                        Sound.clip = TurnOnSound;
-                        Sound.Play();
+                        else
+                        {
+                            for (int i = 0; i < FluorescentLamp.Length; i++)
+                            {
+                                FluorescentLamp[i].SetActive(true);
+                            }
+                            LampMaterial.SetColor("_EmissionColor", new Color(255, 255, 255) * 10f);
+                            Sound.clip = TurnOnSound;
+                            Sound.Play();
+                        }
+                        transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
+                        is_TurnOn = !is_TurnOn;
                     }
-                    transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
-                    is_TurnOn = !is_TurnOn;
+                    else // 안켜지는 상태일 경우
+                    {
+                        Debug.Log("2");
+                        if (is_TurnOn) //버튼 딸칵거리는 소리만 나게 한다.
+                        {
+                            Sound.clip = TurnOffSound;
+                            Sound.Play();
+
+
+                        }
+                        else //버튼 딸칵거리는 소리만 나게 한다.
+                        {
+                            Sound.clip = TurnOnSound;
+                            Sound.Play();
+                        }
+                        transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
+                        is_TurnOn = !is_TurnOn;
+                    }
                 }
+
             }
 
-            if (is_TurnOn)
-            {
-                LampMaterial.SetColor("_EmissionColor", new Color(255, 255, 255) * 10f);
-            }
-            else
-            {
-                LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0) * 10f);
-            }
         }
 
         
