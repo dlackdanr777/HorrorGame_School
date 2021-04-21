@@ -11,7 +11,6 @@ public class Player_Controller : MonoBehaviour
         is_Sit = 1, // 1일경우 앉아있는중
         is_Walk = 10, //10일경우 걷는중
         is_Run = 11, // 11일경우 뛰는중
-        is_Identify = 20 //20일경우 식별하는중
 
     }
 
@@ -41,9 +40,11 @@ public class Player_Controller : MonoBehaviour
 
 
     private CharacterController Controller; //플레이어의 캐릭터콘트롤러 콜라이더
-    private Animator Animator; //플레이어의 애니메이터
+    [HideInInspector]
+    public Animator Animator; //플레이어의 애니메이터
     private Vector3 Movedir; // 플레아어가 움직이는 방향
-
+    [HideInInspector]
+    public bool is_Identify; //오브젝트를 식별중인가 아닌가를 입력받는 변수
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
     private float CoolTime;
@@ -61,18 +62,18 @@ public class Player_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Player_State != (int)State.is_Identify) //플레이어가 식별중이 아닐경우
+        if (!is_Identify) //플레이어가 식별중이 아닐경우
         {
             PlayerMove(); // 플레이어의 전후좌우 움직임 함수
             PlayerRotation(); // 플레이어 좌우 움직임 함수
             CameraRotation(); //1인칭 카메라 상하 움직임 함수
-
-            RayCastFunction();
             PlayerAnimation();
         }
         
-
+        
+        RayCastFunction();
         CoolTimeSet();
+        Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
 
     }
 
@@ -202,9 +203,7 @@ public class Player_Controller : MonoBehaviour
     {
         Animator.SetFloat("MoveSpeed", Input.GetAxis("Vertical")); //애니메이션에 있는 MoveSpeed변수에 전후 방향키 입력전달
         Animator.SetFloat("HorizontalSpeed", Input.GetAxis("Horizontal")); //애니메이션에 있는 HorizontalSpeed변수에 좌우 방향키 입력전달
-        Animator.SetInteger("PlayerState", Player_State); // 현재상태 변수 전달
 
- 
     }
 
 
@@ -282,7 +281,15 @@ public class Player_Controller : MonoBehaviour
             {
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
                 Hit.transform.GetComponent<ObjectController>().PossibleState = true;
-                RayCastText.text = "보기(E)";
+                if (!is_Identify)
+                {
+                    RayCastText.text = "보기(E)";
+                }
+                else if(is_Identify)
+                {
+                    RayCastText.text = "내려놓기(E)";
+                }
+                
             }
 
 
