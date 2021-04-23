@@ -192,8 +192,8 @@ public class Player_Controller : MonoBehaviour
         else
         {
             Controller.height = 1.6f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.85f, 0.18f); //콜라이더의 중심점을 0.9로 올림
-            Controller.radius = 0.25f;
+            Controller.center = new Vector3(0f, 0.85f, 0.2f); //콜라이더의 중심점을 0.9로 올림
+            Controller.radius = 0.31f;
         }
 
 
