@@ -1,0 +1,10 @@
+Load "Mary_Statue.unity" for an example scene, or simply drag the Mary_Statue Prefab folder (in the Project window) into the Hierarchy window.
+
+Note there is lower resolution textures included at 2048x2048 and 1024x1024.
+
+Have fun!
+
+Thanks for purchasing this asset - please consider rating or writing a review about it. If you have any questions then don't hesitate to get in touch at bendurrant@rivermillstudios.com 
+
+If you use this or any of Rivermill Studios other assets then we'd love to know (and help you promote them!).
+

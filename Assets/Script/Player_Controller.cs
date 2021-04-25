@@ -53,6 +53,11 @@ public class Player_Controller : MonoBehaviour
 
     private int layerMask; //레이어 마스크를 지정한다.(레이케스트)
     /////////////////////////////////
+
+    //카메라 무빙함수를 위한 변수들
+    private float y; //카메라 위치를 조정할때 쓰이는 변수
+    private float Time_I;
+
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
@@ -60,6 +65,7 @@ public class Player_Controller : MonoBehaviour
         Movedir = Vector3.zero;
         layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
         Health = 100; //체력을 100으로 초기화한다.
+        y = MainCamera.transform.position.y;
     }
 
     private void FixedUpdate()
@@ -72,6 +78,7 @@ public class Player_Controller : MonoBehaviour
             PlayerAnimation();
         }
 
+        FPSCamera();
         HealthFnc(); //체력관련 함수
         RayCastFunction();
         CoolTimeSet();
@@ -159,11 +166,17 @@ public class Player_Controller : MonoBehaviour
             {
                 SetTrigger = true;
                 if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
+                {
                     Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
+                }
+
                 else //만약 앉아있는 중이라면?
+                {
                     Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
+                }
+                   
             }
-            
+
         }
 
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
@@ -187,17 +200,19 @@ public class Player_Controller : MonoBehaviour
 
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
-            Controller.height = 1.2f; // 캐릭터의 높이를 1.3로 낮춤
-            Controller.center = new Vector3(0f, 0.65f, 0.25f); //콜라이더의 중심점을 0.7로 낮춤
-            Controller.radius = 0.35f;
+            Controller.height = 1f; // 캐릭터의 높이를 1.3로 낮춤
+            Controller.center = new Vector3(0f, 0.5f, 0.15f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.3f;
+
+
         }
         else
         {
-            Controller.height = 1.6f; // 캐릭터의 높이를 1.7로 올림
-            Controller.center = new Vector3(0f, 0.85f, 0.2f); //콜라이더의 중심점을 0.9로 올림
-            Controller.radius = 0.31f;
+            Controller.height = 1.6f; // 캐릭터의 높이를 1.6로 올림
+            Controller.center = new Vector3(0f, 0.85f, 0.1f); //콜라이더의 중심점을 0.85로 올림
+            Controller.radius = 0.25f;
+    
         }
-
 
     }
 
@@ -210,7 +225,7 @@ public class Player_Controller : MonoBehaviour
 
     void HealthFnc() //체력관련 함수
     {
-        HealthText.text = Health.ToString(); //플레이어의 체력을 ui창에 보여준다
+        HealthText.text =  Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
 
 
         //체력이 100일경우 체력바를 감추는 함수 아닐경우 체력바가 보임
@@ -221,6 +236,26 @@ public class Player_Controller : MonoBehaviour
     }
 
 
+    void FPSCamera() //1인칭 카메라 위치를 계산하는 함수
+    {
+        if (Player_State == (int)State.is_Sit)
+        {
+
+            if(1 < (MainCamera.transform.position.y - transform.position.y))
+            {
+                MainCamera.transform.position = new Vector3(transform.position.x + 0.2f, MainCamera.transform.position.y - Time.deltaTime, transform.position.z);
+            }
+
+        }
+        else
+        {
+            if(1.5f > (MainCamera.transform.position.y - transform.position.y))
+            {
+                MainCamera.transform.position = new Vector3(transform.position.x + 0.2f, MainCamera.transform.position.y + Time.deltaTime, transform.position.z);
+            }
+
+        }
+    }
 
 
     void RayCastFunction() // 레이캐스트 관련 함수
@@ -305,6 +340,21 @@ public class Player_Controller : MonoBehaviour
                     RayCastText.text = "내려놓기(E)";
                 }
                 
+            }
+
+            else if(Hit.transform.tag == "Piano") //현재 보고 있는 것이 피아노 일경우
+            {
+                Debug.Log("실행");
+                HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
+                Hit.transform.GetComponent<BeethovenController>().PossibleState = true;
+                if (Hit.transform.GetComponent<BeethovenController>().fncStart)
+                {
+                    RayCastText.text = "피아노 닫기(E)";
+                }
+                else
+                {
+                    RayCastText.text = " ";
+                }
             }
 
 

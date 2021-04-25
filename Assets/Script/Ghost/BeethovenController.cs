@@ -5,48 +5,145 @@ using UnityEngine;
 
 public class BeethovenController : MonoBehaviour
 {
-    public GameObject[] Speaker = new GameObject[10]; //스피커를 받아오는 변수
     public AudioClip music; //음악을 받아오는 변수
-    public AudioSource[] Speaker_ = new AudioSource[10]; //스피커의 오디오를 불러오는 변수
+    public AudioClip Endmusic; //함수가 끝날때 재생될 변수
+    private AudioSource Speaker; //스피커의 오디오를 불러오는 변수
 
     private GameObject Player; //플레이어를 받는 변수
+    private Player_Controller Player_Controller;
+    [HideInInspector]
+    public bool fncStart = false;
+    private float timer = 0;
 
-    private bool fncStart = false;
-    float i = 0;
+    [HideInInspector]
+    public bool PossibleState = false; //현재 컨트롤 가능한 상태인지 입력받는 변수
+
+    /////////////////쿨타임 관련 변수
+    private bool SetTrigger = false;
+    private bool ResetTrigger = false;
+    private float CoolTime;
+    private float ResetCoolTime; //리셋 쿨타임
+    private float SetCooltime = 1f; // 쿨타임을 1초로 설정
+    /// ///////////////////////////////////
+
 
     private void Start()
     {
-        for(int i = 0; i < Speaker.Length; i++)
-        {
-            Speaker_[i] = Speaker[i].GetComponent<AudioSource>(); //스피커의 오디오소스를 스피커_에 넣는다.
-            Speaker_[i].clip = music; //스피커에 음악을 실행시킬 준비를 한다.
-        }
+        Speaker = GetComponent<AudioSource>();
+        Speaker.clip = music;
         Player = GameObject.Find("Player"); //플레이어 오브젝트를 찾아 넣는다.
+        Player_Controller = Player.GetComponent<Player_Controller>();
         RunFuc();
+    }
+
+    private void FixedUpdate()
+    {
+        DecreaseHealth();
+        StopFuc();
+        CoolTimeSet();
+        DataReset();
     }
 
     void RunFuc() //베토벤 귀신을 실행시킨다.
     {
-        for (int i = 0; i < Speaker.Length; i++)
-        {
-            Speaker_[i].Play(); //음악을 실행시킨다.
-        }
-        
-        while( i < 5f)
-        {
-            i = Time.deltaTime;
-            Debug.Log(i);
-        }
-        i = 0f;
+        Speaker.Play();
         fncStart = true; //변수를 참으로 만들어 플레이어의 체력을 깍게 만든다.
     }
 
+    
+
+
+
     void StopFuc()
     {
-        for (int i = 0; i < Speaker.Length; i++)
+        
+        if (PossibleState)
         {
-            Speaker_[i].Stop();
+            if (Input.GetKey(KeyCode.E))
+            {
+                if (!SetTrigger)
+                {
+                    if (fncStart)
+                    {
+                        SetTrigger = true;
+                        Speaker.Stop(); // 음악을 정지한다.
+                        Speaker.clip = Endmusic; //음악을 변경하고 재생한다
+                        Speaker.Play();
+                        fncStart = false;//변수를 참으로 만들어 플레이어의 체력을 깍는것을 멈춘다.
+                    }
+
+                }
+
+            }
         }
 
+    }
+
+
+
+    void DecreaseHealth() //체력을 깍게 만드는 함수
+    {
+        if (fncStart)
+        {
+            timer += Time.deltaTime;
+
+            if (timer > 10f) //타이머가 10초를 넘었을경우
+            {
+                if (Player_Controller.Health <= 0)
+                {
+                    Player_Controller.Health = 0; //0이하가 되면 0으로 고정
+                    Speaker.Stop(); // 음악을 정지한다.
+                    fncStart = false;//변수를 참으로 만들어 플레이어의 체력을 깍는것을 멈춘다.
+
+                }
+                else
+                {
+                    Player_Controller.Health -= Time.deltaTime; //초만큼 체력을 깍는다.
+                }
+
+
+               
+            }
+        }
+        else
+        {
+            timer = 0;
+        }
+
+    }
+
+    void CoolTimeSet()
+    {
+        if (SetTrigger) //쿨타임 설정
+        {
+            CoolTime += Time.deltaTime;
+            if (CoolTime > SetCooltime)
+            {
+                CoolTime = 0;
+                SetTrigger = false;
+            }
+        }
+    }
+
+
+    void DataReset() //컨트롤을 초기화하는 함수
+    {
+        if (PossibleState && !ResetTrigger) // 컨트롤 가능하고 리셋트리거가 작동되지않았을때
+        {
+            ResetTrigger = true; //리셋트리거를 작동시킨다.
+
+        }
+
+        else if (ResetTrigger) //리셋트리거가 작동 했을 때
+        {
+
+            ResetCoolTime += Time.deltaTime; //숫자를 센다
+            if (ResetCoolTime > 0.1f) //지정한 쿨타임 시간이 지나면
+            {
+                ResetTrigger = false; //리셋트리거를 끈다
+                ResetCoolTime = 0f; //시간을 초기화
+                PossibleState = false; //컨트롤 가능한 상태를 끈다.
+            }
+        }
     }
 }

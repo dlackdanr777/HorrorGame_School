@@ -1,0 +1,228 @@
+fileFormatVersion: 2
+guid: 952ddca833cf8da439810a3c2c607615
+timeCreated: 1467461450
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Coving_Low.001
+    100002: //RootNode
+    100004: Walls
+    100006: WallsDetails
+    100008: Windows
+    100010: Windows.001
+    100012: Windows.002
+    100014: Windows.000
+    100016: Skirting
+    100018: Coving
+    100020: Coving_Low.000
+    100022: Coving_Low.002
+    100024: Door.000
+    100026: DoorFrame.000
+    100028: Doorknob.000
+    100030: Faceplate.000
+    100032: Hinge_Door.000
+    100034: Hinge_Door.001
+    100036: Hinge_Door.002
+    100038: Hinge_Frame.000
+    100040: Hinge_Frame.001
+    100042: Hinge_Frame.002
+    100044: Latch.000
+    100046: Strikeplate.000
+    100048: Coving.003
+    100050: Coving.000
+    100052: Leaves
+    100054: Light_Wall_Low
+    100056: Plant
+    100058: Plant - Right.001
+    100060: Plant_Low.001
+    100062: Plant_Pot
+    400000: Coving_Low.001
+    400002: //RootNode
+    400004: Walls
+    400006: WallsDetails
+    400008: Windows
+    400010: Windows.001
+    400012: Windows.002
+    400014: Windows.000
+    400016: Skirting
+    400018: Coving
+    400020: Coving_Low.000
+    400022: Coving_Low.002
+    400024: Door.000
+    400026: DoorFrame.000
+    400028: Doorknob.000
+    400030: Faceplate.000
+    400032: Hinge_Door.000
+    400034: Hinge_Door.001
+    400036: Hinge_Door.002
+    400038: Hinge_Frame.000
+    400040: Hinge_Frame.001
+    400042: Hinge_Frame.002
+    400044: Latch.000
+    400046: Strikeplate.000
+    400048: Coving.003
+    400050: Coving.000
+    400052: Leaves
+    400054: Light_Wall_Low
+    400056: Plant
+    400058: Plant - Right.001
+    400060: Plant_Low.001
+    400062: Plant_Pot
+    2300000: Coving_Low.001
+    2300002: Walls
+    2300004: WallsDetails
+    2300006: Windows
+    2300008: Windows.001
+    2300010: Windows.002
+    2300012: Windows.000
+    2300014: Skirting
+    2300016: Coving
+    2300018: Coving_Low.000
+    2300020: Coving_Low.002
+    2300022: Door.000
+    2300024: DoorFrame.000
+    2300026: Doorknob.000
+    2300028: Faceplate.000
+    2300030: Hinge_Door.000
+    2300032: Hinge_Door.001
+    2300034: Hinge_Door.002
+    2300036: Hinge_Frame.000
+    2300038: Hinge_Frame.001
+    2300040: Hinge_Frame.002
+    2300042: Latch.000
+    2300044: Strikeplate.000
+    2300046: Coving.003
+    2300048: Coving.000
+    2300050: Leaves
+    2300052: Light_Wall_Low
+    2300054: Plant
+    2300056: Plant - Right.001
+    2300058: Plant_Low.001
+    2300060: Plant_Pot
+    3300000: Coving_Low.001
+    3300002: Walls
+    3300004: WallsDetails
+    3300006: Windows
+    3300008: Windows.001
+    3300010: Windows.002
+    3300012: Windows.000
+    3300014: Skirting
+    3300016: Coving
+    3300018: Coving_Low.000
+    3300020: Coving_Low.002
+    3300022: Door.000
+    3300024: DoorFrame.000
+    3300026: Doorknob.000
+    3300028: Faceplate.000
+    3300030: Hinge_Door.000
+    3300032: Hinge_Door.001
+    3300034: Hinge_Door.002
+    3300036: Hinge_Frame.000
+    3300038: Hinge_Frame.001
+    3300040: Hinge_Frame.002
+    3300042: Latch.000
+    3300044: Strikeplate.000
+    3300046: Coving.003
+    3300048: Coving.000
+    3300050: Leaves
+    3300052: Light_Wall_Low
+    3300054: Plant
+    3300056: Plant - Right.001
+    3300058: Plant_Low.001
+    3300060: Plant_Pot
+    4300000: Windows.002
+    4300002: Walls
+    4300004: Coving_Low.001
+    4300006: Windows.001
+    4300008: Windows
+    4300010: WallsDetails
+    4300012: Windows.000
+    4300014: Skirting
+    4300016: Coving
+    4300018: Coving_Low.002
+    4300020: Coving_Low.000
+    4300022: DoorFrame.000
+    4300024: Door.000
+    4300026: Doorknob.000
+    4300028: Faceplate.000
+    4300030: Hinge_Frame.000
+    4300032: Hinge_Frame.001
+    4300034: Hinge_Frame.002
+    4300036: Latch.000
+    4300038: Hinge_Door.000
+    4300040: Hinge_Door.001
+    4300042: Hinge_Door.002
+    4300044: Strikeplate.000
+    4300046: Coving.003
+    4300048: Coving.000
+    4300050: Leaves
+    4300052: Plant_Low.001
+    4300054: Plant_Pot
+    4300056: Plant
+    4300058: Plant - Right.001
+    4300060: Light_Wall_Low
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
