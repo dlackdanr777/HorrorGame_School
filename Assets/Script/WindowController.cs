@@ -13,6 +13,9 @@ public class WindowController : MonoBehaviour
     public bool is_right; //오른쪽 창문인지 아닌지를 받는 변수
     private WindowController Window2Controller; // 반대쪽 창문의 컴포넌트를 받아온다
     public GameObject Window2; // 반대쪽 창문의 오브젝트를 받는 변수
+
+    [Range(0.5f, 1.0f)]
+    public float OpenDistance = 0.9f; //문이 열릴 거리를 받는 함수
     
     [Header("소리 관련 변수")]
     private AudioSource Audio;
@@ -51,31 +54,31 @@ public class WindowController : MonoBehaviour
 
         if (is_open) // 만약 문이 열렸다면?
         {
-            if (x < 0.1f)
+            if (x < OpenDistance / 9)
             {
                 x += Time.deltaTime * 0.5f;
             }
-            else if (x < 0.3f)
+            else if (x < OpenDistance / 3)
             {
                 x += Time.deltaTime * 1.2f;
             }
-            else if (x < 0.9f)
+            else if (x < OpenDistance)
             {
                 x += Time.deltaTime * 1.5f;
             }
-            else if (x > 0.9f)
+            else if (x > OpenDistance)
             {
-                x = 0.9f;
+                x = OpenDistance;
             }
             // 문이 열릴수록 속도가 증가하다 0.9를 넘으면 0.9로 고정
         }
         else if (!is_open) // 만약 문이 닫혔다면?
         {
-            if (x > 0.8f)
+            if (x > OpenDistance - 0.1)
             {
                 x -= Time.deltaTime * 0.5f;
             }
-            else if (x > 0.6f)
+            else if (x > OpenDistance - 0.3)
             {
                 x -= Time.deltaTime;
             }

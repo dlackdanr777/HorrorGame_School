@@ -10,6 +10,7 @@ TagManager:
   - LightButton
   - WoodenFloor
   - ImportantObj
+  - light
   layers:
   - Default
   - TransparentFX

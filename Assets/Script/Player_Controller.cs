@@ -20,8 +20,11 @@ public class Player_Controller : MonoBehaviour
     public float JumpSpeed = 8.0f; // 플레이어의 점프 속도
     public float gravity = 20.0f; // 플레이어에게 작용하는 중력크기
     public int Player_State = 0; // 플레이어의 현재 상태
+    public GameObject Flashlight;
     public Flashlight_PRO Flash; // 플레이어가 사용하는 플래쉬
-
+    [HideInInspector]
+    public float Health = 100f; //플레이어의 체력100이 기본값이다.
+    public Text HealthText; //체력을 보여주는 텍스트
 
     [Header ("카메라 속성")]
     public Camera MainCamera; //플레이어 1인칭 카메라 변수
@@ -35,8 +38,6 @@ public class Player_Controller : MonoBehaviour
     public float MaxDistance = 2f; //레이캐스트의 거리
     public Text RayCastText; //레이캐스트가 충돌했을때 나타날 텍스트
 
-
-    public GameObject Flashlight;
 
 
     private CharacterController Controller; //플레이어의 캐릭터콘트롤러 콜라이더
@@ -58,6 +59,7 @@ public class Player_Controller : MonoBehaviour
         Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
         layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
+        Health = 100; //체력을 100으로 초기화한다.
     }
 
     private void FixedUpdate()
@@ -69,8 +71,8 @@ public class Player_Controller : MonoBehaviour
             CameraRotation(); //1인칭 카메라 상하 움직임 함수
             PlayerAnimation();
         }
-        
-        
+
+        HealthFnc(); //체력관련 함수
         RayCastFunction();
         CoolTimeSet();
         Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
@@ -206,10 +208,23 @@ public class Player_Controller : MonoBehaviour
 
     }
 
+    void HealthFnc() //체력관련 함수
+    {
+        HealthText.text = Health.ToString(); //플레이어의 체력을 ui창에 보여준다
+
+
+        //체력이 100일경우 체력바를 감추는 함수 아닐경우 체력바가 보임
+        //float HiddenValue = 0;
+        //HealthText.color = new Color(255, 255, 255, 255);
+        //if (Health < 100f) //체력이 100이하로 떨어질경우
+        //else if()
+    }
+
+
+
 
     void RayCastFunction() // 레이캐스트 관련 함수
     {
-        
         Debug.DrawRay(MainCamera.transform.position, MainCamera.transform.forward * MaxDistance, Color.blue, 0.3f);
         if(Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out Hit, MaxDistance,layerMask)) // 앞에 레이케스트를 쏜다.
         {
