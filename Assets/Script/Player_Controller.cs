@@ -22,9 +22,17 @@ public class Player_Controller : MonoBehaviour
     public int Player_State = 0; // 플레이어의 현재 상태
     public GameObject Flashlight;
     public Flashlight_PRO Flash; // 플레이어가 사용하는 플래쉬
+
+
+    //체력관련 변수
     [HideInInspector]
     public float Health = 100f; //플레이어의 체력100이 기본값이다.
     public Text HealthText; //체력을 보여주는 텍스트
+    [HideInInspector]
+    public bool is_Resting = false; //체력이 회복되는 상황인가를 받는 변수
+    [HideInInspector]
+    public bool is_Under_Attack = false; //공격받는 상황인가를 받는 변수
+
 
     [Header ("카메라 속성")]
     public Camera MainCamera; //플레이어 1인칭 카메라 변수
@@ -227,6 +235,23 @@ public class Player_Controller : MonoBehaviour
     {
         HealthText.text =  Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
 
+        if (!is_Under_Attack) //공격받는 중이 아니거나
+        {
+            if (is_Resting) //쉬는 중이거나
+            {
+                if(Health < 100) //체력이 100보다 적을경우
+                {
+                    Health += Time.deltaTime * 0.5f; //체력을 초당 0.5씩 회복한다.
+                    Debug.Log("체력회복");
+                }
+                else
+                {
+                    Health = 100f;
+                }
+
+            }
+        }
+ 
 
         //체력이 100일경우 체력바를 감추는 함수 아닐경우 체력바가 보임
         //float HiddenValue = 0;

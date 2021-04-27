@@ -48,6 +48,7 @@ public class BeethovenController : MonoBehaviour
     {
         Speaker.Play();
         fncStart = true; //변수를 참으로 만들어 플레이어의 체력을 깍게 만든다.
+        Player_Controller.is_Under_Attack = true; //플레이어의 상태를 공격받는 중으로 바꾼다.
     }
 
     
@@ -70,6 +71,7 @@ public class BeethovenController : MonoBehaviour
                         Speaker.clip = Endmusic; //음악을 변경하고 재생한다
                         Speaker.Play();
                         fncStart = false;//변수를 참으로 만들어 플레이어의 체력을 깍는것을 멈춘다.
+                        Player_Controller.is_Under_Attack = false; //플레이어의 상태를 공격받는 중이 아닌것으로 바꾼다
                     }
 
                 }
@@ -86,7 +88,6 @@ public class BeethovenController : MonoBehaviour
         if (fncStart)
         {
             timer += Time.deltaTime;
-
             if (timer > 10f) //타이머가 10초를 넘었을경우
             {
                 if (Player_Controller.Health <= 0)
@@ -94,11 +95,13 @@ public class BeethovenController : MonoBehaviour
                     Player_Controller.Health = 0; //0이하가 되면 0으로 고정
                     Speaker.Stop(); // 음악을 정지한다.
                     fncStart = false;//변수를 참으로 만들어 플레이어의 체력을 깍는것을 멈춘다.
+                    Player_Controller.is_Under_Attack = false; //플레이어의 상태를 공격받는 중이 아닌것으로 바꾼다
 
                 }
                 else
                 {
                     Player_Controller.Health -= Time.deltaTime; //초만큼 체력을 깍는다.
+                    
                 }
 
 
@@ -143,6 +146,7 @@ public class BeethovenController : MonoBehaviour
                 ResetTrigger = false; //리셋트리거를 끈다
                 ResetCoolTime = 0f; //시간을 초기화
                 PossibleState = false; //컨트롤 가능한 상태를 끈다.
+                Player_Controller.is_Under_Attack = false; //플레이어의 상태를 공격받는 중이 아닌 것으로 변경한다
             }
         }
     }
