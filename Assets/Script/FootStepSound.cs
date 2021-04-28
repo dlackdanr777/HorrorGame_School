@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class FootStepSound : MonoBehaviour
 {
     private Player_Controller Player; //플레이어의 스크립트를 받아옴

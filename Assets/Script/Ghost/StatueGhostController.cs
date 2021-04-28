@@ -29,9 +29,8 @@ public class StatueGhostController : MonoBehaviour
     private Vector3 SetPosition;//오브젝트의 원래 위치를 받는다.
 
     //시야 관련 변수
-    private float m_angle = 30f; //시야각
+    private float m_angle = 80f; //시야각
     private float m_distance = 5f; //시야길이
-    private LayerMask m_layerMask = 0;
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
@@ -42,7 +41,6 @@ public class StatueGhostController : MonoBehaviour
     /// ///////////////////////////////////
 
 
-    RaycastHit Hit;
     private void Start()
     {
         Player = GameObject.Find("Player"); //플레이어를 찾아 넣는다.
@@ -57,7 +55,6 @@ public class StatueGhostController : MonoBehaviour
         
         }
         is_Start = true;
-        m_layerMask = 1 << LayerMask.NameToLayer("Player"); //플레이어 레이어를 지정한다
     }
 
     private void FixedUpdate()
@@ -70,13 +67,12 @@ public class StatueGhostController : MonoBehaviour
                 {
                     transform.LookAt(new Vector3(Player.transform.position.x, transform.position.y, Player.transform.position.z)); //플레이어를 바라보게 회전한다.
 
-                    if (State == State.can_move) //만약 움직일수 있는 물체거나 충돌범위 안이면?
+                    if (State == State.can_move) //만약 움직일수 있는 물체면
                     {
-                        Nav.Resume();
-                        if(!Out_Collide)
+                        Nav.Resume(); //네비메쉬를 킨다
+                        if (!Out_Collide || Player_Detection) //만약 충돌범위 안이거나 시야범위 안이면?
                         {
-                            Nav.destination = Player.transform.position; //플레이어를 추적한다.
-                            Debug.Log("추적중");
+                            Nav.destination = Player.transform.position; //플레이어위치를 갱신시킨다.
                         }
 
                     }
@@ -84,7 +80,11 @@ public class StatueGhostController : MonoBehaviour
                 }
                 else //카메라에 있을 경우
                 {
-                    Nav.Stop();
+                    if (State == State.can_move) //움직일수 있는 상태일때
+                    {
+                        Nav.Stop(); //네비를 끈다
+                    }
+
                 }
 
 
@@ -134,8 +134,8 @@ public class StatueGhostController : MonoBehaviour
 
         DataReset();
         Sight();
-        Debug.Log(Player_Detection);
     }
+
 
 
     private void OnBecameInvisible()
@@ -155,6 +155,8 @@ public class StatueGhostController : MonoBehaviour
             Did_Collide = true; //충돌변수에 참을 준다.
             Out_Collide = false; //충돌범위안이면 거짓을 준다
         }
+
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -164,54 +166,70 @@ public class StatueGhostController : MonoBehaviour
             Out_Collide = true; //충돌범위에서 벗어나면 이 변수에 참을준다.
         }
     }
+    private Vector3 BoundaryAngle(float _angle)
+    {
+        _angle += transform.eulerAngles.y;
+        return new Vector3(Mathf.Sin(_angle * Mathf.Deg2Rad), 0f, Mathf.Cos(_angle * Mathf.Deg2Rad));
+    }
 
 
     void Sight() //몬스터의 시야 관련 함수
     {
+        Vector3 _leftBoundary = BoundaryAngle(-m_angle * 0.5f); //왼쪽 눈의 시야각을 설정
+        Vector3 _rightBoundary = BoundaryAngle(m_angle * 0.5f);//오른쪽 눈의 시야각을 설정
 
-        Vector3 t_direction = (Player.transform.position - transform.position).normalized; //거리를 구한다.
-        float t_angle = Vector3.Angle(t_direction, transform.forward); //플레이어와 몬스터의 각도차를 구한다
+        Debug.DrawRay(transform.position + (transform.up * 1.5f), _leftBoundary, Color.red);
+        Debug.DrawRay(transform.position + (transform.up * 1.5f), _rightBoundary, Color.red);
 
-        if (Physics.BoxCast(transform.position + new Vector3(0, 1.5f, 0), transform.localScale, transform.forward, out Hit, transform.rotation, m_distance)) //레이를 쏜다
+        Collider[] _target = Physics.OverlapSphere(transform.position, m_distance); //근처에 있는 오브젝트들의 콜라이더를 받아온다
+
+        if (Player_Detection) //만약 시야범위 내라면?
         {
-            if (Hit.transform.tag == "Player")
-            {
-                Player_Detection = true;
-            }
-            else if((Hit.transform.tag != "Player"))
-            {
-                Player_Detection = false;
-                Debug.Log("1");
-            }
-            else
-            {
-                Player_Detection = false;
-                Debug.Log("2");
-            }
+            Did_Collide = true; //충돌 변수도 참으로 만든다.
         }
-        else
+
+
+        for(int i = 0; i < _target.Length; i++)
         {
-            Player_Detection = false;
-            Debug.Log("3");
+            Transform _targetTf = _target[i].transform;
+            if(_targetTf.tag == "Player")
+            {
+                Vector3 _direction = (_targetTf.position - transform.position).normalized;
+                float _angle = Vector3.Angle(_direction, transform.forward);
+
+                if(_angle < m_angle * 0.5f)
+                {
+                    RaycastHit hit;
+                    if(Physics.Raycast(transform.position + (transform.up * 1.5f), _direction, out hit, m_distance))
+                    {
+                        if(hit.transform.tag == "Player") //플레이어가 닿으면?
+                        {
+                            Player_Detection = true; //시야포착을 참으로 만든다.
+                            Debug.DrawRay(transform.position + transform.up * 1.5f, _direction, Color.blue);
+                        }
+                    }
+                    else //시야에 닿지않으면?
+                    {
+                        Player_Detection = false;
+                    }
+                }
+                else //시야각에서 벗어나있으면?
+                {
+                    Player_Detection = false;
+                }
+            }
+           
         }
-        
-        
+
 
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position + new Vector3(0, 1.5f, 0), transform.forward * 10);
-        Gizmos.DrawWireCube(transform.position + new Vector3(0, 1.5f, 0) + transform.forward * 10, transform.localScale);
-    }
 
     void DataReset() //컨트롤을 초기화하는 함수
     {
         if (Did_Collide && !ResetTrigger) // 플레이어에 충돌중이고 리셋트리거가 작동되지않았을때
         {
             ResetTrigger = true; //리셋트리거를 작동시킨다.
-            Debug.Log("작동");
 
         }
 
@@ -224,7 +242,6 @@ public class StatueGhostController : MonoBehaviour
                 ResetTrigger = false; //리셋트리거를 끈다
                 ResetCoolTime = 0f; //시간을 초기화
                 Did_Collide = false; //충돌 상태를 끈다.
-                Debug.Log("꺼짐");
             }
         }
     }
