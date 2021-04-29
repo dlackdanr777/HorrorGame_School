@@ -22,8 +22,14 @@ public class Monster_Controller : MonoBehaviour
     private BoxCollider Box; //자신의 박스콜라이더를 받을 변수
     private Vector3 Player_location; //플레이어의 위치를 받는 변수
     private Vector3 Set_location; //자신의 위치를 저장할 변수
-    private Animator Ani;
+    private Animator Ani; //자신의 애니메이터 콜라이더를 저장할 변수
 
+    //소리관련 변수
+    private AudioSource Audio; //자신의 오디오소스를 저장할 변수
+    [SerializeField]
+    private AudioClip[] AudioClip = new AudioClip[5]; //소리를 저장할 변수
+    [SerializeField]
+    private AudioClip[] FootStepSound = new AudioClip[5]; //발소리를 저장할 변수
 
     //시야 관련 변수
     private float m_angle = 80f; //시야각
@@ -35,6 +41,8 @@ public class Monster_Controller : MonoBehaviour
     private bool Player_Detection = false; //플레이어가 시야 범위 안에 있으면 참을 받는 변수
     private bool is_Tracking = false; //추적중일때 참을 받는 변수
     private bool TrackingFailed = false; //추적에 실패했을때 참을 받는 변수
+    private bool[] State_Controll = new bool[10]; //각종 상태를 제어할 변수
+    private float[] State_Controll_Time = new float[10]; //각종 상태를 제어할 변수
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
@@ -42,8 +50,8 @@ public class Monster_Controller : MonoBehaviour
     private bool ResetTrigger2 = false;
     private float CoolTime;
     private float ResetCoolTime; //리셋 쿨타임
-    private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     private float ResetCoolTime2 = 0;
+    private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     private float time = 0;
     /// ///////////////////////////////////
 
@@ -57,19 +65,23 @@ public class Monster_Controller : MonoBehaviour
         Box = GetComponent<BoxCollider>();
 
         Ani = GetComponent<Animator>();
+        Audio = GetComponent<AudioSource>();
         Set_location = transform.position;
+
+        Audio.clip = AudioClip[0];
+        Audio.Play();
+        Audio.loop = true;
     }
 
     private void FixedUpdate()
     {
-        
+
         TrackingPlayer();
         Sight();
         HearAsound();
         DataReset();
 
         Ani.SetFloat("Speed", Mathf.Abs(Nav.velocity.x + Nav.velocity.z));
-        Ani.SetInteger("State", (int)m_State);
 
         if(m_State == m_State.Tracking)
         {
@@ -80,29 +92,41 @@ public class Monster_Controller : MonoBehaviour
             Nav.speed = 1f;
         }
 
-        NavMeshPath path = new NavMeshPath();
         if (Mathf.Abs(Nav.velocity.x + Nav.velocity.z) < 0.1f) //몬스터가 움직이지 않을경우
         {
             time += Time.deltaTime;
-            if(time > 5f)
+            if(time > 10f)
             {
                 Debug.Log("못감");
                 m_State = m_State.is_Walk;
                 Did_Collide = false;
                 Player_Detection = false;
+                is_Tracking = false;
                 Nav.destination = Set_location;
+                Nav.Resume();
+                Audio.pitch = 1f;
+                for (int i = 0; i < State_Controll.Length; i++) // 사용된 변수를 초기화한다.
+                {
+                    State_Controll[i] = false;
+                    State_Controll_Time[i] = 0;
+                }
                 time = 0;
             }
 
         }
 
+
     }
+
+
+
 
     void TrackingPlayer() //플레이어 추적관련 함수
     {
-        if (!Out_Collide) //충돌범위에서 안벗어났으면?
+
+        if (!Out_Collide)
         {
-            Player_location = Player.transform.position; //플레이어의 현재 위치를 저장한다.
+            Player_location = Player.transform.position;
         }
 
 
@@ -110,24 +134,93 @@ public class Monster_Controller : MonoBehaviour
         if (Player_Detection) //몬스터 시야에 들어오면?
         {
             is_Tracking = true;
-            m_State = m_State.Tracking; //상태를 추적중으로 바꾼다.
             Nav.destination = Player.transform.position; //플레이어위치를 갱신시킨다.
-            Nav.Resume(); //네비메쉬를 킨다
         }
 
-        else if (Did_Collide) //플레이어에 충돌중이면
+
+
+        if (Did_Collide) //플레이어에 충돌중이면
         {
-            Nav.Resume(); //네비메쉬를 킨다
-            if (!Out_Collide && !is_Tracking) //만약 충돌범위 안이거나 시야에서 벗어나있는 상태면?
+            if (Did_Collide && !is_Tracking) //만약 충돌범위 안이거나 시야에서 벗어나있는 상태면?
             {
                 Nav.destination = Player_location; //플레이어위치를 갱신시킨다.
                 m_State = m_State.is_Boundary; //상태를 경계중으로 바꾼다
+                if (!State_Controll[0] && !State_Controll[1])
+                {
+                    State_Controll[0] = true;
+                    State_Controll_Time[0] = 0;
+                    Nav.Stop();
+                }
+
+                else if (State_Controll[0])
+                {
+                    if (!State_Controll[1])
+                    {
+                        Audio.clip = AudioClip[1];
+                        Audio.Stop();
+                        Audio.Play();
+                        Audio.loop = false;
+                        State_Controll[1] = true;
+
+                    }
+
+                    State_Controll_Time[0] += Time.deltaTime;
+                    if(State_Controll_Time[0] > 2f)
+                    {
+
+                        Audio.clip = AudioClip[0];
+                        Audio.Stop();
+                        Audio.Play();
+                        Audio.loop = true;
+                        State_Controll[0] = false;
+                        State_Controll[1] = true;
+                        State_Controll_Time[0] = 0f;
+                        Nav.Resume();
+                    }
+                }
             }
-            else if (!Out_Collide && is_Tracking)
+
+
+            else if (Did_Collide && is_Tracking)
             {
                 Nav.destination = Player_location; //플레이어위치를 갱신시킨다.
-                m_State = m_State.Tracking; //상태를 추적중으로 유지한다
-                Nav.Resume(); //네비메쉬를 킨다
+                m_State = m_State.Tracking; //상태를 경계중으로 바꾼다
+                if (!State_Controll[2] && !State_Controll[3])
+                {
+                    State_Controll[2] = true;
+                    State_Controll_Time[1] = 0;
+                    Nav.Stop();
+                }
+
+                else if (State_Controll[2])
+                {
+                    
+                    if (!State_Controll[3])
+                    {
+                        Ani.SetInteger("State", 1);
+                        Audio.clip = AudioClip[2];
+                        Audio.pitch = 0.7f;
+                        Audio.Stop();
+                        Audio.Play();
+                        Audio.loop = false;
+                        State_Controll[3] = true;
+                    }
+                    
+                    State_Controll_Time[1] += Time.deltaTime;
+                    if (State_Controll_Time[1] > 3.5f)
+                    {
+                        Ani.SetInteger("State", 0);
+                        Audio.clip = AudioClip[0];
+                        Audio.pitch = 2f;
+                        Audio.Stop();
+                        Audio.Play();
+                        Audio.loop = true;
+                        State_Controll[2] = false;
+                        State_Controll[3] = true;
+                        State_Controll_Time[1] = 0f;
+                        Nav.Resume();
+                    }
+                }
             }
         }
         else
@@ -136,6 +229,14 @@ public class Monster_Controller : MonoBehaviour
             m_State = m_State.is_Walk;
             Did_Collide = false;
             Player_Detection = false;
+            is_Tracking = false;
+            Audio.pitch = 1f;
+            Nav.Resume();
+            for (int i = 0; i < State_Controll.Length; i++) // 사용된 변수를 초기화한다.
+            {
+                State_Controll[i] = false;
+                State_Controll_Time[i] = 0;
+            }
         }
 
     }
