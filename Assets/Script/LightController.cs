@@ -19,7 +19,6 @@ public class LightController : MonoBehaviour
     public AudioClip TurnOffSound;
 
     private GameObject Player;
-    private Player_Controller Player_Controller;
 
 
     private bool SetTrigger = false;
@@ -38,7 +37,6 @@ public class LightController : MonoBehaviour
             LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0));
         }
         Player = GameObject.Find("Player");
-        Player_Controller = Player.GetComponent<Player_Controller>();
         
     }
 
@@ -85,7 +83,6 @@ public class LightController : MonoBehaviour
                             Sound.clip = TurnOnSound;
                             Sound.Play();
                         }
-                        transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
                         is_TurnOn = !is_TurnOn;
                     }
                     else // 안켜지는 상태일 경우
@@ -103,7 +100,6 @@ public class LightController : MonoBehaviour
                             Sound.clip = TurnOnSound;
                             Sound.Play();
                         }
-                        transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
                         is_TurnOn = !is_TurnOn;
                     }
                 }
@@ -113,33 +109,6 @@ public class LightController : MonoBehaviour
         }
 
         
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if(is_TurnOn) //불이 켜져있는 상태거나
-        {
-            if(other.gameObject.tag == "Player") //플레이어가 일정범위에 있으면
-            {
-                Player_Controller.is_Resting = true; //플레이어를 휴식중으로 바꾼다
-            }
-
-        }
-        else
-        {
-            if (other.gameObject.tag == "Player") //플레이어가 일정범위에 있으면
-            {
-                Player_Controller.is_Resting = false; //플레이어의 휴식중을 끈다
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "Player") //플레이어가 일정범위에서 벗어나면
-        {
-            Player_Controller.is_Resting = false; //플레이어의 휴식중을 끈다
-        }
     }
 
 

@@ -32,7 +32,7 @@ public class MonsterController : MonoBehaviour
     [SerializeField]
     private AudioClip[] AudioClip = new AudioClip[5]; //소리를 저장할 변수
     [SerializeField]
-    private AudioClip[] FootStepSound = new AudioClip[5]; //발소리를 저장할 변수
+
 
     //시야 관련 변수
     private float m_angle = 80f; //시야각
@@ -120,10 +120,8 @@ public class MonsterController : MonoBehaviour
     {
         while (true) //무한반복 시킨다.
         {
-            Debug.Log("1");
             if (m_state == box_state) //전상태와 현재상태가 같으면?
             {
-                Debug.Log("같음");
                 switch (m_state)
                 {
                     case m_state.is_Stop: //만약 서있는 중이라면
@@ -147,9 +145,9 @@ public class MonsterController : MonoBehaviour
                 }
 
             }
+
             else if (m_state != box_state) // 현재상태와 전 상태가 다를경우
             {
-                Debug.Log("다름");
                 box_state = m_state; //변수에 임시로 저장한다.
                 switch (m_state)
                 {

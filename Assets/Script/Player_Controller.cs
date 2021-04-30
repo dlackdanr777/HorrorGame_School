@@ -87,10 +87,11 @@ public class Player_Controller : MonoBehaviour
         }
 
         FPSCamera();
-        HealthFnc(); //체력관련 함수
         RayCastFunction();
         CoolTimeSet();
         Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
+
+        HealthText.text = Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
 
     }
 
@@ -144,14 +145,15 @@ public class Player_Controller : MonoBehaviour
         currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -CameraRotationLimit, CameraRotationLimit); //카메라 상하의 움직임을 일정 각도이상으로 안꺽이게 제한
 
         MainCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f); //위에서 구한 값으로 카메라 각도를 변경
-        if(Player_State == (int)State.is_Sit)
-        {
-            Flashlight.transform.localEulerAngles = new Vector3(30f, currentCameraRotationX - 60, currentCameraRotationX * 0.2f -40f); //위에서 구한 값으로 플래쉬의 각도도 변경하지만 앉아있을 경우 손전등이 아래를 향하기에 그 각도만큼 보정해준다.
-        }
-        else 
-            Flashlight.transform.localEulerAngles = new Vector3(0f, currentCameraRotationX + 10f, currentCameraRotationX * 0.3f - 10f); //위에서 구한 값으로 플래쉬의 각도도 변경한다
+
+        StartCoroutine("Flash_Move");
     }
 
+    IEnumerator Flash_Move()
+    {
+        yield return new WaitForSeconds(0.3f);
+        Flashlight.transform.localRotation = Quaternion.Slerp(Flashlight.transform.localRotation, Quaternion.Euler(0f, -90f, -currentCameraRotationX), 20f * Time.deltaTime);
+    }
 
     void PlayerRotation() //플레이어의 좌우회전을 구현한 함수
     {
@@ -209,16 +211,16 @@ public class Player_Controller : MonoBehaviour
         if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
         {
             Controller.height = 1f; // 캐릭터의 높이를 1.3로 낮춤
-            Controller.center = new Vector3(0f, 0.5f, 0.15f); //콜라이더의 중심점을 0.7로 낮춤
-            Controller.radius = 0.3f;
+            Controller.center = new Vector3(0f, 0.5f, 0.3f); //콜라이더의 중심점을 0.7로 낮춤
+            Controller.radius = 0.35f;
 
 
         }
         else
         {
             Controller.height = 1.6f; // 캐릭터의 높이를 1.6로 올림
-            Controller.center = new Vector3(0f, 0.85f, 0.1f); //콜라이더의 중심점을 0.85로 올림
-            Controller.radius = 0.25f;
+            Controller.center = new Vector3(0f, 0.85f, 0.2f); //콜라이더의 중심점을 0.85로 올림
+            Controller.radius = 0.3f;
     
         }
 
@@ -231,34 +233,7 @@ public class Player_Controller : MonoBehaviour
 
     }
 
-    void HealthFnc() //체력관련 함수
-    {
-        HealthText.text =  Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
 
-        if (!is_Under_Attack) //공격받는 중이 아니거나
-        {
-            if (is_Resting) //쉬는 중이거나
-            {
-                if(Health < 100) //체력이 100보다 적을경우
-                {
-                    Health += Time.deltaTime * 0.5f; //체력을 초당 0.5씩 회복한다.
-                    Debug.Log("체력회복");
-                }
-                else
-                {
-                    Health = 100f;
-                }
-
-            }
-        }
- 
-
-        //체력이 100일경우 체력바를 감추는 함수 아닐경우 체력바가 보임
-        //float HiddenValue = 0;
-        //HealthText.color = new Color(255, 255, 255, 255);
-        //if (Health < 100f) //체력이 100이하로 떨어질경우
-        //else if()
-    }
 
 
     void FPSCamera() //1인칭 카메라 위치를 계산하는 함수
@@ -268,7 +243,7 @@ public class Player_Controller : MonoBehaviour
 
             if(1 < (MainCamera.transform.position.y - transform.position.y))
             {
-                MainCamera.transform.position = new Vector3(transform.position.x + 0.2f, MainCamera.transform.position.y - Time.deltaTime, transform.position.z);
+                MainCamera.transform.position = new Vector3(this.transform.position.x, MainCamera.transform.position.y - Time.deltaTime, this.transform.position.z);
             }
 
         }
@@ -276,7 +251,7 @@ public class Player_Controller : MonoBehaviour
         {
             if(1.5f > (MainCamera.transform.position.y - transform.position.y))
             {
-                MainCamera.transform.position = new Vector3(transform.position.x + 0.2f, MainCamera.transform.position.y + Time.deltaTime, transform.position.z);
+                MainCamera.transform.position = new Vector3(this.transform.position.x, MainCamera.transform.position.y + Time.deltaTime, this.transform.position.z);
             }
 
         }
