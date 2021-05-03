@@ -346,7 +346,16 @@ public class Player_Controller : MonoBehaviour
                 }
                 else if(is_Identify)
                 {
-                    RayCastText.text = "내려놓기(E)";
+                    if (Hit.transform.GetComponent<ObjectController>().Obj_State != Obj_State.Obj) //만약 일반 오브젝트가 아니였을 경우
+                    {
+                        RayCastText.text = "획득(R) \n\n내려놓기(E)";
+
+                    }
+                    else
+                    {
+                        RayCastText.text = "내려놓기(E)";
+                    }
+                        
                     NameText.text = Hit.transform.GetComponent<ObjectController>().Name;
                     ExplanationText.text = Hit.transform.GetComponent<ObjectController>().Explanation;
                 }

@@ -5,9 +5,22 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum Obj_State
+{
+    Obj,
+    Key1,
+    Key2,
+    Key3,
+    Key4,
+    Battery,
+
+}
 
 public class ObjectController : MonoBehaviour
 {
+    public Obj_State Obj_State; //오브젝트의 종류를 담는 변수
+
+
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
     [HideInInspector]
@@ -114,12 +127,49 @@ public class ObjectController : MonoBehaviour
 
                         Player_Controller.is_Identify = false; //식별중을 끈다
                         is_Identify = false; //식별중을 끈다.
-
-                        //transform.localPosition = Save_Position;//원래있던자리에 둔다
-                        //transform.localRotation = Save_Rotation;
-                        
                     }
+
                 }
+            }
+            else if (Input.GetKey(KeyCode.R)) //F키를 눌렀을경우
+            {
+                if (!SetTrigger)
+                {
+                    SetTrigger = true;
+                    if (Obj_State != Obj_State.Obj) //만약 오브젝트이외 일경우
+                    {
+                        switch (Obj_State)
+                        {
+                            case Obj_State.Key1: //1학년 열쇠였을 경우
+                                GameManager.instance.OwnKey = 1; //키 보유 변수를 1로 만든다.
+                                break;
+                            case Obj_State.Key2: //2학년 열쇠였을 경우
+                                GameManager.instance.OwnKey = 2; //키 보유 변수를 2로 만든다.
+                                break;
+                            case Obj_State.Key3: //3학년 열쇠였을 경우
+                                GameManager.instance.OwnKey = 3; //키 보유 변수를 3로 만든다.
+                                break;
+
+
+
+                            case Obj_State.Battery: //배터리 였을 경우
+                                GameManager.instance.Battery_Gauge = 100f; //배터리를 풀로 채운다.
+                                break;
+
+                        }
+                        
+                        if (Player_Controller.is_Identify) //만약 식별중일경우
+                        {
+
+                            Player_Controller.is_Identify = false; //식별중을 끈다
+                            is_Identify = false; //식별중을 끈다.
+                        }
+                        this.gameObject.SetActive(false); //오브젝트를 숨긴다.
+
+                    }
+
+                }
+
             }
 
         }

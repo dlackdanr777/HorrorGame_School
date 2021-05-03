@@ -129,7 +129,7 @@ public class StatueGhostController : MonoBehaviour
         else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
         {
 
-            Box.size = new Vector3(15, 8f, 15); //충돌 범위를 조정한다
+            Box.size = new Vector3(15, 2.5f, 15); //충돌 범위를 조정한다
         }
 
         DataReset();

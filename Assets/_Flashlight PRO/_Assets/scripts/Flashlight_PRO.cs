@@ -20,7 +20,24 @@ public class Flashlight_PRO : MonoBehaviour
 
 
 
-
+	IEnumerator Battery_Gauge()
+	{
+        while (true)
+        {
+			yield return new WaitForSeconds(0.1f);
+			if (GameManager.instance.Battery_Gauge <= 0) //배터리 잔량이 0이하 일경우
+			{
+				Lights.SetActive(false); //플래시를 끈다.
+			}
+			else if (GameManager.instance.Battery_Gauge > 0 && is_enabled) //배터리가 0이상이고 전원이 켜져 있을 경우
+			{
+				GameManager.instance.Battery_Gauge -= 0.03f; //배터리 게이지를 초당 0.3씩 줄인다.
+				Lights.SetActive(true); //플래시를 킨다.
+				Debug.Log(GameManager.instance.Battery_Gauge);
+			}
+		}
+		
+	}
 
 
 
@@ -33,6 +50,8 @@ public class Flashlight_PRO : MonoBehaviour
 		spotlight = Lights.transform.Find ("Spotlight").GetComponent<Light> ();
 		ambient_light_material = Lights.transform.Find ("ambient").GetComponent<Renderer> ().material;
 		ambient_mat_color = ambient_light_material.GetColor ("_TintColor");
+
+		StartCoroutine("Battery_Gauge");
 	}
 	
 
@@ -63,12 +82,16 @@ public class Flashlight_PRO : MonoBehaviour
 	/// </summary>
 	public void Switch()
 	{
-		is_enabled = !is_enabled; 
-
-		Lights.SetActive (is_enabled);
 
 		if (switch_sound != null)
 			switch_sound.Play ();
+		if(GameManager.instance.Battery_Gauge > 0)
+        {
+			is_enabled = !is_enabled;
+			Lights.SetActive(is_enabled);
+		}
+
+	
 	}
 
 
