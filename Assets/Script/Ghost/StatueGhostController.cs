@@ -29,7 +29,7 @@ public class StatueGhostController : MonoBehaviour
     private Vector3 SetPosition;//오브젝트의 원래 위치를 받는다.
 
     //시야 관련 변수
-    private float m_angle = 80f; //시야각
+    private float m_angle = 120f; //시야각
     private float m_distance = 5f; //시야길이
 
     /////////////////쿨타임 관련 변수
@@ -46,13 +46,13 @@ public class StatueGhostController : MonoBehaviour
         Player = GameObject.Find("Player"); //플레이어를 찾아 넣는다.
         Player_Controller = Player.GetComponent<Player_Controller>();
         Box = GetComponent<BoxCollider>();
-        if(State == State.can_move)
+        if (State == State.can_move)
         {
             SetPosition = transform.position;
             Nav = GetComponent<NavMeshAgent>();
             Nav.destination = transform.position;
             Nav.Stop();
-        
+
         }
         is_Start = true;
     }
@@ -119,17 +119,17 @@ public class StatueGhostController : MonoBehaviour
         //만약 플레이어가 앉아있거나 멈춰있으면
         if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
         {
-            Box.size = new Vector3(5, 2.5f, 5); //충돌 범위를 줄인다.
+            Box.size = new Vector3(4, 2.5f, 4); //충돌 범위를 줄인다.
 
         }
         else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
         {
-            Box.size = new Vector3(10, 2.5f, 10); //충돌 범위를 조정한다
+            Box.size = new Vector3(8, 2.5f, 8); //충돌 범위를 조정한다
         }
         else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
         {
 
-            Box.size = new Vector3(20, 8f, 20); //충돌 범위를 조정한다
+            Box.size = new Vector3(15, 8f, 15); //충돌 범위를 조정한다
         }
 
         DataReset();
@@ -150,7 +150,7 @@ public class StatueGhostController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.tag == "Player") //트리거에 플레이어가  충돌중이라면
+        if (other.gameObject.tag == "Player") //트리거에 플레이어가  충돌중이라면
         {
             Did_Collide = true; //충돌변수에 참을 준다.
             Out_Collide = false; //충돌범위안이면 거짓을 준다
@@ -189,20 +189,20 @@ public class StatueGhostController : MonoBehaviour
         }
 
 
-        for(int i = 0; i < _target.Length; i++)
+        for (int i = 0; i < _target.Length; i++)
         {
             Transform _targetTf = _target[i].transform;
-            if(_targetTf.tag == "Player")
+            if (_targetTf.tag == "Player")
             {
                 Vector3 _direction = (_targetTf.position - transform.position).normalized;
                 float _angle = Vector3.Angle(_direction, transform.forward);
 
-                if(_angle < m_angle * 0.5f)
+                if (_angle < m_angle * 0.5f)
                 {
                     RaycastHit hit;
-                    if(Physics.Raycast(transform.position + (transform.up * 1.5f), _direction, out hit, m_distance))
+                    if (Physics.Raycast(transform.position + (transform.up * 1.5f), _direction, out hit, m_distance))
                     {
-                        if(hit.transform.tag == "Player") //플레이어가 닿으면?
+                        if (hit.transform.tag == "Player") //플레이어가 닿으면?
                         {
                             Player_Detection = true; //시야포착을 참으로 만든다.
                             Debug.DrawRay(transform.position + transform.up * 1.5f, _direction, Color.blue);
@@ -218,7 +218,7 @@ public class StatueGhostController : MonoBehaviour
                     Player_Detection = false;
                 }
             }
-           
+
         }
 
 
@@ -245,5 +245,5 @@ public class StatueGhostController : MonoBehaviour
             }
         }
     }
-
 }
+

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public enum Health_State
@@ -20,6 +21,7 @@ public class Health_Controller : MonoBehaviour
 
     //회복관련 변수
     private bool Recovering = false;
+
 
     //쿨타임 관련 변수
     private bool ResetTrigger = false;
@@ -51,19 +53,16 @@ public class Health_Controller : MonoBehaviour
         {
             if (Recovering && LightController.is_TurnOn) //체력 회복 범위에 있고 전등이 켜진상태라면?
             {
-                if (Player_Controller.Health < 100) //체력이 100보다 적을경우
+                if (GameManager.instance.Health < 100) //체력이 100보다 적을경우
                 {
-                    Player_Controller.Health += Time.deltaTime * 0.5f; //체력을 초당 0.5씩 회복한다.
-                    Debug.Log("체력회복");
+                    GameManager.instance.Health += Time.deltaTime * 0.5f; //체력을 초당 0.5씩 회복한다.
                 }
                 else
                 {
-                    Player_Controller.Health = 100f;
+                    GameManager.instance.Health = 100f;
                 }
-                Debug.Log("쉬는중");
             }
         }
-
     }
 
 

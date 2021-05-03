@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class ObjectController : MonoBehaviour
@@ -17,6 +18,10 @@ public class ObjectController : MonoBehaviour
     private GameObject Player; //플레이어 캐릭터를 지정하는 변수
     private Player_Controller Player_Controller;
 
+    //아이템 정보 관련변수
+    [Header("아이템 정보")]
+    public string Name; //아이템의 이름
+    public string Explanation; //아이템의 설명
 
 
     //원래정보를 저장할 변수
@@ -78,13 +83,17 @@ public class ObjectController : MonoBehaviour
                 Scroll = 0.5f;
             }
 
+
         }
         else
         {
+
+
             Vector3 velo = Vector3.zero;
-            transform.position = Vector3.SmoothDamp(transform.position, Save_Position, ref velo, 0.05f); //원래 위치로 되돌린다.
+            transform.localPosition = Vector3.SmoothDamp(transform.position, Save_Position, ref velo, 0.05f); //원래 위치로 되돌린다.
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Save_Rotation, 0.25f); // 원래 각도로 되돌린다.
             Scroll = 1f; // 스크롤변수를 초기화한다.
+
         }
 
     }
@@ -127,10 +136,10 @@ public class ObjectController : MonoBehaviour
                 {
                     
                     SetTrigger = true;
-                    if(!Player_Controller.is_Identify) //만약 플레이어가 식별중이 아닐경우
+                    if (!Player_Controller.is_Identify) //만약 플레이어가 식별중이 아닐경우
                     {
                         //플레이어 애니메이션 조정
-                        if(Player_Controller.Player_State != (int)Player_Controller.State.is_Sit) //앉아있는 중이 아니라면
+                        if (Player_Controller.Player_State != (int)Player_Controller.State.is_Sit) //앉아있는 중이 아니라면
                         {
                             Player_Controller.Player_State = (int)Player_Controller.State.is_Stop; //서있는 것으로 바꾼다
                         }
@@ -147,9 +156,9 @@ public class ObjectController : MonoBehaviour
                         Save_Position = transform.localPosition; //물체의 위치값을 저장한다.
                         Save_Rotation = transform.localRotation; //물체의 회전값을 저장한다.
 
+
                     }
 
-                    
                 }
             }
         }

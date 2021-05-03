@@ -23,15 +23,17 @@ public class Player_Controller : MonoBehaviour
     public GameObject Flashlight;
     public Flashlight_PRO Flash; // 플레이어가 사용하는 플래쉬
 
-
     //체력관련 변수
-    [HideInInspector]
-    public float Health = 100f; //플레이어의 체력100이 기본값이다.
-    public Text HealthText; //체력을 보여주는 텍스트
     [HideInInspector]
     public bool is_Resting = false; //체력이 회복되는 상황인가를 받는 변수
     [HideInInspector]
     public bool is_Under_Attack = false; //공격받는 상황인가를 받는 변수
+
+    //아이템 관련 변수
+    [SerializeField]
+    private Text NameText; //이름을 보여줄 텍스트
+    [SerializeField]
+    private Text ExplanationText; //설명을 보여줄 텍스트
 
 
     [Header ("카메라 속성")]
@@ -72,7 +74,6 @@ public class Player_Controller : MonoBehaviour
         Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
         layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
-        Health = 100; //체력을 100으로 초기화한다.
         y = MainCamera.transform.position.y;
     }
 
@@ -90,8 +91,6 @@ public class Player_Controller : MonoBehaviour
         RayCastFunction();
         CoolTimeSet();
         Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
-
-        HealthText.text = Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
 
     }
 
@@ -271,7 +270,15 @@ public class Player_Controller : MonoBehaviour
                     Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
                     if (Hit.transform.GetComponent<DoorController>().is_Lock)
                     {
-                        RayCastText.text = "잠김(E)";
+                        if(GameManager.instance.OwnKey >= (int)Hit.transform.GetComponent<DoorController>().KeyStage) //만약 현재 보유중인 키가 문에 맞는 열쇠이거나 그 이상의 열쇠를 가지고 있으면?
+                        {
+                            RayCastText.text = "잠금해제(E)";
+                        }
+                        else
+                        {
+                            RayCastText.text = "잠김(E)";
+                        }
+                        
                     }
                     else if (Hit.transform.GetComponent<DoorController>().is_open)
                     {
@@ -334,10 +341,14 @@ public class Player_Controller : MonoBehaviour
                 if (!is_Identify)
                 {
                     RayCastText.text = "보기(E)";
+                    NameText.text = null;
+                    ExplanationText.text = null;
                 }
                 else if(is_Identify)
                 {
                     RayCastText.text = "내려놓기(E)";
+                    NameText.text = Hit.transform.GetComponent<ObjectController>().Name;
+                    ExplanationText.text = Hit.transform.GetComponent<ObjectController>().Explanation;
                 }
                 
             }
@@ -362,6 +373,8 @@ public class Player_Controller : MonoBehaviour
             {
                 HitObj = null;
                 RayCastText.text = " ";
+                NameText.text = null;
+                ExplanationText.text = null;
             }
 
             
@@ -401,6 +414,8 @@ public class Player_Controller : MonoBehaviour
             }
             HitObj = null;
             RayCastText.text = " ";
+            NameText.text = null;
+            ExplanationText.text = null;
         }
 
     }

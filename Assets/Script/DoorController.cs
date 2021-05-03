@@ -7,6 +7,17 @@ public enum DoorState
     OneDoor,
     TwoDoor,   
 }
+
+public enum KeyStage //문이 어느 열쇠에 열릴지를 받는 변수
+{
+    stage0,
+    stage1,
+    stage2,
+    stage3,
+    Library,
+    DontOpen,
+}
+
 public class DoorController : MonoBehaviour
 {
 
@@ -26,6 +37,7 @@ public class DoorController : MonoBehaviour
 
     [Header("문 관련 변수")]
     public DoorState State;
+    public KeyStage KeyStage;
 
 
     [Space]
@@ -33,6 +45,7 @@ public class DoorController : MonoBehaviour
     public AudioClip OpenSound;
     public AudioClip CloseSound;
     public AudioClip SoundWhenLocked;
+    public AudioClip UnLockSound;
 
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
@@ -53,6 +66,8 @@ public class DoorController : MonoBehaviour
         {
             Audio.pitch = 0.72f;
         }
+
+        StartCoroutine("GhostDoor");//일정 확률로 문이 닫히게 하는 함수 실행
     }
 
     private void FixedUpdate()
@@ -63,6 +78,28 @@ public class DoorController : MonoBehaviour
 
         CoolTimeSet();
         DataReset();
+    }
+
+
+
+    IEnumerator GhostDoor() //일정 확률로 문이 닫히게 하는 함수
+    {
+        while (true)
+        {
+            if (is_open)
+            {
+               
+                float a = Random.Range(0.0f, 100f);
+                if (a <= 1f) //만약 0~100까지 난수에서 1이하의 수가 나올경우
+                {
+                    is_open = false; //문을 닫는다.
+                    Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
+                    Audio.Play();
+                }
+            }
+
+            yield return new WaitForSeconds(1f); //1초마다 재생
+        }
     }
 
     void OpenTheDoor()
@@ -151,11 +188,16 @@ public class DoorController : MonoBehaviour
                 if (!SetTrigger)
                 {
                     SetTrigger = true;
-
-                    if (is_Lock) // 문이 잠겨있을 경우
+                    if (is_Lock && GameManager.instance.OwnKey < (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수없는 문이라면
                     {
                         Audio.clip = SoundWhenLocked; // 잠긴 문 사운드를 재생
                         Audio.Play();
+                    }
+                    else if (is_Lock && GameManager.instance.OwnKey >= (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수있는 문이라면
+                    {
+                        Audio.clip = UnLockSound; // 문을 열쇠로 여는 사운드를 재생
+                        Audio.Play();
+                        is_Lock = false; //잠금을 해제한다.
                     }
                     else // 문이 잠겨있지 않을경우
                     {

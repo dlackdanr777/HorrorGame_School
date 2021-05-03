@@ -90,9 +90,9 @@ public class BeethovenController : MonoBehaviour
             timer += Time.deltaTime;
             if (timer > 10f) //타이머가 10초를 넘었을경우
             {
-                if (Player_Controller.Health <= 0)
+                if (GameManager.instance.Health <= 0)
                 {
-                    Player_Controller.Health = 0; //0이하가 되면 0으로 고정
+                    GameManager.instance.Health = 0; //0이하가 되면 0으로 고정
                     Speaker.Stop(); // 음악을 정지한다.
                     fncStart = false;//변수를 참으로 만들어 플레이어의 체력을 깍는것을 멈춘다.
                     Player_Controller.is_Under_Attack = false; //플레이어의 상태를 공격받는 중이 아닌것으로 바꾼다
@@ -100,7 +100,7 @@ public class BeethovenController : MonoBehaviour
                 }
                 else
                 {
-                    Player_Controller.Health -= Time.deltaTime; //초만큼 체력을 깍는다.
+                    GameManager.instance.Health -= Time.deltaTime; //초만큼 체력을 깍는다.
                     
                 }
 
