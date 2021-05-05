@@ -280,6 +280,62 @@ public class Inventory : MonoBehaviour
 
             }
         }
+
+        if (Input.GetKey(KeyCode.Alpha7)) //숫자키 7를눌렀을때
+        {
+            if (!SetTrigger)
+            {
+                SetTrigger = true;
+                if (Slot_State[6] == Obj_State.Battery && Choice_Slot[6]) //만약 배터리이고 선택중일 경우엔?
+                {
+                    fullCheck[6] = false; //해당 슬롯의 사용여부를 거짓으로 만든다.
+                    Slot_State[6] = Obj_State.Obj; //해당 슬롯을 빈공간으로 만든다.
+                    slots[6].sprite = Item_Image[0]; //해당 슬롯의 이미지를 없앤다.
+                    GameManager.instance.Battery_Gauge = 100f; //배터리 게이지를 100%로 만든다.
+                }
+
+                slots[6].transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 255); //알파값을 최대로 높힌다.
+                Choice_Slot[6] = true; //선택중인 슬롯에게 참을 준다.
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    if (i != 6)
+                    {
+                        slots[i].transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 0); //알파값을 낮춘다.
+                        Choice_Slot[i] = false; //선택중인 슬롯이외에 거짓값을 준다.
+                    }
+
+                }
+
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Alpha8)) //숫자키 8를눌렀을때
+        {
+            if (!SetTrigger)
+            {
+                SetTrigger = true;
+                if (Slot_State[7] == Obj_State.Battery && Choice_Slot[7]) //만약 배터리이고 선택중일 경우엔?
+                {
+                    fullCheck[7] = false; //해당 슬롯의 사용여부를 거짓으로 만든다.
+                    Slot_State[7] = Obj_State.Obj; //해당 슬롯을 빈공간으로 만든다.
+                    slots[7].sprite = Item_Image[0]; //해당 슬롯의 이미지를 없앤다.
+                    GameManager.instance.Battery_Gauge = 100f; //배터리 게이지를 100%로 만든다.
+                }
+
+                slots[7].transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 255); //알파값을 최대로 높힌다.
+                Choice_Slot[7] = true; //선택중인 슬롯에게 참을 준다.
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    if (i != 7)
+                    {
+                        slots[i].transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 0); //알파값을 낮춘다.
+                        Choice_Slot[i] = false; //선택중인 슬롯이외에 거짓값을 준다.
+                    }
+
+                }
+
+            }
+        }
     }
 
 

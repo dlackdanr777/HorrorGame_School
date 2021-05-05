@@ -173,7 +173,6 @@ public class ObjectController : MonoBehaviour
                                         break;
 
                                 }
-                                Destroy(this.gameObject);
                                 break; //if문밖으로 나온다.
                             }
                         }
@@ -184,7 +183,7 @@ public class ObjectController : MonoBehaviour
                             Player_Controller.is_Identify = false; //식별중을 끈다
                             is_Identify = false; //식별중을 끈다.
                         }
-
+                        Destroy(this.gameObject);
 
                     }
 

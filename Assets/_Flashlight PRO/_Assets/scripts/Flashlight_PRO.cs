@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
-
-
+using UnityEngine.UI;
 
 public class Flashlight_PRO : MonoBehaviour 
 {
@@ -17,6 +15,7 @@ public class Flashlight_PRO : MonoBehaviour
 	private Material ambient_light_material;
 	private Color ambient_mat_color;
 	private bool is_enabled = false;
+	public Image Gauge_Image; //플래시의 배터리잔량을 보여줄 슬라이더를 받아온다.
 
 
 
@@ -35,6 +34,7 @@ public class Flashlight_PRO : MonoBehaviour
 				Lights.SetActive(true); //플래시를 킨다.
 				Debug.Log(GameManager.instance.Battery_Gauge);
 			}
+			Gauge_Image.fillAmount = GameManager.instance.Battery_Gauge * 0.01f;
 		}
 		
 	}

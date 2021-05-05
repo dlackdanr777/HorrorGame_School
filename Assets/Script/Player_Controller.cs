@@ -121,10 +121,10 @@ public class Player_Controller : MonoBehaviour
                 Movedir *= (Speed * 0.5f); // 스피드/2 값만큼 이동속도 증가
             }
 
-            if (Input.GetButton("Jump")) // 점프키를 눌렀을 경우?
+            /*if (Input.GetButton("Jump")) // 점프키를 눌렀을 경우?
             {
                 Movedir.y = JumpSpeed; //플레이어의 y좌표를 점프스피드값만큼 준다
-            }
+            }*/
 
         }
         Now_State();
