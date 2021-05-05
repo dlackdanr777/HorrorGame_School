@@ -270,7 +270,7 @@ public class Player_Controller : MonoBehaviour
                     Hit.transform.GetComponent<DoorController>().PossibleState = true; // 사용가능한 문일경우 컨트롤가능한 상태로 변경한다.
                     if (Hit.transform.GetComponent<DoorController>().is_Lock)
                     {
-                        if(GameManager.instance.OwnKey >= (int)Hit.transform.GetComponent<DoorController>().KeyStage) //만약 현재 보유중인 키가 문에 맞는 열쇠이거나 그 이상의 열쇠를 가지고 있으면?
+                        if(GameManager.instance.OwnKey == (int)Hit.transform.GetComponent<DoorController>().KeyStage) //만약 현재 보유중인 키가 문에 맞는 열쇠이거나 그 이상의 열쇠를 가지고 있으면?
                         {
                             RayCastText.text = "잠금해제(E)";
                         }

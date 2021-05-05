@@ -11,7 +11,8 @@ public enum Obj_State
     Key1,
     Key2,
     Key3,
-    Key4,
+    LibraryKey,
+    ArtRoomKey,
     Battery,
 
 }
@@ -19,7 +20,7 @@ public enum Obj_State
 public class ObjectController : MonoBehaviour
 {
     public Obj_State Obj_State; //오브젝트의 종류를 담는 변수
-
+    private Inventory Inventory; //인벤토리를 받아오는 변수
 
     [HideInInspector]
     public bool PossibleState = false; //현재 문이 컨트롤 가능한 상태인지 입력받는 변수
@@ -56,6 +57,7 @@ public class ObjectController : MonoBehaviour
         Save_Rotation = transform.localRotation;//변수를 초기화한다
         Player = GameObject.Find("Player"); //플레이어를 찾아 넣어준다
         Player_Controller = Player.GetComponent<Player_Controller>(); //플레이어의 스크립트를 받아온다.
+        Inventory = GameObject.FindObjectOfType<Inventory>();
 
     }
 
@@ -138,33 +140,51 @@ public class ObjectController : MonoBehaviour
                     SetTrigger = true;
                     if (Obj_State != Obj_State.Obj) //만약 오브젝트이외 일경우
                     {
-                        switch (Obj_State)
+                        for(int i = 0; i < Inventory.slots.Length; i++)
                         {
-                            case Obj_State.Key1: //1학년 열쇠였을 경우
-                                GameManager.instance.OwnKey = 1; //키 보유 변수를 1로 만든다.
-                                break;
-                            case Obj_State.Key2: //2학년 열쇠였을 경우
-                                GameManager.instance.OwnKey = 2; //키 보유 변수를 2로 만든다.
-                                break;
-                            case Obj_State.Key3: //3학년 열쇠였을 경우
-                                GameManager.instance.OwnKey = 3; //키 보유 변수를 3로 만든다.
-                                break;
+                            if(Inventory.fullCheck[i] == false)
+                            {
+                                Inventory.fullCheck[i] = true; //인벤토리를 채움으로 바꾼다.
+                                switch (Obj_State)
+                                {
+                                    case Obj_State.Key1: //1학년 열쇠였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.Key1; //해당 슬롯의 속성을 key1로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[1]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.Key2: //2학년 열쇠였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.Key2; //해당 슬롯의 속성을 key2로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[2]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.Key3: //3학년 열쇠였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.Key3; //해당 슬롯의 속성을 key3로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[3]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.LibraryKey: //도서실 열쇠였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.LibraryKey; //해당 슬롯의 속성을 도서실열쇠로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[4]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.ArtRoomKey: //미술실 열쇠였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.ArtRoomKey; //해당 슬롯의 속성을 미술실 열쇠로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[5]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.Battery: //배터리 였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.Battery; //슬롯 속성을 배터리로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[6]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
 
-
-
-                            case Obj_State.Battery: //배터리 였을 경우
-                                GameManager.instance.Battery_Gauge = 100f; //배터리를 풀로 채운다.
-                                break;
-
+                                }
+                                Destroy(this.gameObject);
+                                break; //if문밖으로 나온다.
+                            }
                         }
-                        
+ 
                         if (Player_Controller.is_Identify) //만약 식별중일경우
                         {
 
                             Player_Controller.is_Identify = false; //식별중을 끈다
                             is_Identify = false; //식별중을 끈다.
                         }
-                        this.gameObject.SetActive(false); //오브젝트를 숨긴다.
+
 
                     }
 

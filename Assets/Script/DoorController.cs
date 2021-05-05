@@ -15,6 +15,7 @@ public enum KeyStage //문이 어느 열쇠에 열릴지를 받는 변수
     stage2,
     stage3,
     Library,
+    ArtRoom,
     DontOpen,
 }
 
@@ -90,7 +91,7 @@ public class DoorController : MonoBehaviour
             {
                
                 float a = Random.Range(0.0f, 100f);
-                if (a <= 1f) //만약 0~100까지 난수에서 1이하의 수가 나올경우
+                if (a <= 0.1f) //만약 0~100까지 난수에서 0.1이하의 수가 나올경우
                 {
                     is_open = false; //문을 닫는다.
                     Audio.clip = CloseSound; // 닫히는 문 사운드를 재생
@@ -188,12 +189,12 @@ public class DoorController : MonoBehaviour
                 if (!SetTrigger)
                 {
                     SetTrigger = true;
-                    if (is_Lock && GameManager.instance.OwnKey < (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수없는 문이라면
+                    if (is_Lock && GameManager.instance.OwnKey != (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수없는 문이라면
                     {
                         Audio.clip = SoundWhenLocked; // 잠긴 문 사운드를 재생
                         Audio.Play();
                     }
-                    else if (is_Lock && GameManager.instance.OwnKey >= (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수있는 문이라면
+                    else if (is_Lock && GameManager.instance.OwnKey == (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수있는 문이라면
                     {
                         Audio.clip = UnLockSound; // 문을 열쇠로 여는 사운드를 재생
                         Audio.Play();
