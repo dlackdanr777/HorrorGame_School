@@ -69,7 +69,6 @@ public class MonsterController : MonoBehaviour
         Sight();
         HearAsound();
 
-        Ani.SetFloat("Speed", Mathf.Abs(Nav.velocity.x + Nav.velocity.z));
     }
 
     void Change_State()

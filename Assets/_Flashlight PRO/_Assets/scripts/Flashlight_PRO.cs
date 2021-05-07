@@ -32,7 +32,6 @@ public class Flashlight_PRO : MonoBehaviour
 			{
 				GameManager.instance.Battery_Gauge -= 0.03f; //배터리 게이지를 초당 0.3씩 줄인다.
 				Lights.SetActive(true); //플래시를 킨다.
-				Debug.Log(GameManager.instance.Battery_Gauge);
 			}
 			Gauge_Image.fillAmount = GameManager.instance.Battery_Gauge * 0.01f;
 		}

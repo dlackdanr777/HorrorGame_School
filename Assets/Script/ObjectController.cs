@@ -14,7 +14,8 @@ public enum Obj_State
     LibraryKey,
     ArtRoomKey,
     Battery,
-
+    Medkit,
+    ScoreItem,
 }
 
 public class ObjectController : MonoBehaviour
@@ -170,6 +171,14 @@ public class ObjectController : MonoBehaviour
                                     case Obj_State.Battery: //배터리 였을 경우
                                         Inventory.Slot_State[i] = Obj_State.Battery; //슬롯 속성을 배터리로 바꾼다.
                                         Inventory.slots[i].sprite = Inventory.Item_Image[6]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.Medkit: //치료제 였을 경우
+                                        Inventory.Slot_State[i] = Obj_State.Medkit; //슬롯 속성을 치료제로 바꾼다.
+                                        Inventory.slots[i].sprite = Inventory.Item_Image[7]; //아이템슬롯의 이미지를 바꾼다.
+                                        break;
+                                    case Obj_State.ScoreItem: //클리어에 필요한 아이템이였을경우
+                                        Inventory.fullCheck[i] = false; //인벤토리 풀체크를 푼다.
+                                        GameManager.instance.Score += 1; //스코어를 하나 올린다.
                                         break;
 
                                 }

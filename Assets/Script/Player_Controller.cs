@@ -364,7 +364,6 @@ public class Player_Controller : MonoBehaviour
 
             else if(Hit.transform.tag == "Piano") //현재 보고 있는 것이 피아노 일경우
             {
-                Debug.Log("실행");
                 HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
                 Hit.transform.GetComponent<BeethovenController>().PossibleState = true;
                 if (Hit.transform.GetComponent<BeethovenController>().fncStart)
@@ -374,6 +373,20 @@ public class Player_Controller : MonoBehaviour
                 else
                 {
                     RayCastText.text = " ";
+                }
+            }
+            else if (Hit.transform.tag == "FireAlarm") //현재 보고 있는 것이 비상벨 일경우
+            {
+
+                HitObj = Hit.transform.gameObject; // 충돌한 물체의 정보를 저장함
+                Hit.transform.GetComponent<FireAlarmController>().PossibleState = true;
+                if (Hit.transform.GetComponent<FireAlarmController>().is_TurnOn)
+                {
+                    RayCastText.text = "끄기(E)";
+                }
+                else
+                {
+                    RayCastText.text = "켜기(E)";
                 }
             }
 

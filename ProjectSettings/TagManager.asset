@@ -12,6 +12,7 @@ TagManager:
   - ImportantObj
   - light
   - Piano
+  - FireAlarm
   layers:
   - Default
   - TransparentFX
