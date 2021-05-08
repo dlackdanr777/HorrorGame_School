@@ -65,10 +65,22 @@ public class MonsterController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Change_State();
-        Sight();
-        HearAsound();
+        if (GameManager.instance.is_Start)
+        {
+            Change_State();
+            Sight();
+            HearAsound();
+        }
 
+        Ani.SetFloat("Speed", Mathf.Abs(Nav.velocity.x + Nav.velocity.z));
+
+        if(m_state == m_state.Tracking) //만약 추적중일때
+        {
+            if(Vector3.Distance(transform.position, Player.transform.position) < 0.5f) //근접하게되면
+            {
+                GameManager.instance.Health = 0f;
+            }
+        }
     }
 
     void Change_State()

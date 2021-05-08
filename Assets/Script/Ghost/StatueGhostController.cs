@@ -59,81 +59,89 @@ public class StatueGhostController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (is_Start) //시작변수가 참이면
+        if (GameManager.instance.is_Start)
         {
-            if (Did_Collide) //플레이어에 충돌중이고  
+            if (is_Start) //시작변수가 참이면
             {
-                if (can_turn) //카메라범위에서 벗어났으면?
+                if (Did_Collide) //플레이어에 충돌중이고  
                 {
-                    transform.LookAt(new Vector3(Player.transform.position.x, transform.position.y, Player.transform.position.z)); //플레이어를 바라보게 회전한다.
-
-                    if (State == State.can_move) //만약 움직일수 있는 물체면
+                    if (can_turn) //카메라범위에서 벗어났으면?
                     {
-                        Nav.Resume(); //네비메쉬를 킨다
-                        if (!Out_Collide || Player_Detection) //만약 충돌범위 안이거나 시야범위 안이면?
+                        transform.LookAt(new Vector3(Player.transform.position.x, transform.position.y, Player.transform.position.z)); //플레이어를 바라보게 회전한다.
+
+                        if (State == State.can_move) //만약 움직일수 있는 물체면
                         {
-                            Nav.destination = Player.transform.position; //플레이어위치를 갱신시킨다.
+                            Nav.Resume(); //네비메쉬를 킨다
+                            if(Vector3.Distance(transform.position, Player.transform.position) < 0.5f)
+                            {
+                                GameManager.instance.Health = 0;
+                            }
+
+                            if (!Out_Collide || Player_Detection) //만약 충돌범위 안이거나 시야범위 안이면?
+                            {
+                                Nav.destination = Player.transform.position; //플레이어위치를 갱신시킨다.
+                            }
+
+                        }
+
+                    }
+                    else //카메라에 있을 경우
+                    {
+                        if (State == State.can_move) //움직일수 있는 상태일때
+                        {
+                            Nav.Stop(); //네비를 끈다
                         }
 
                     }
 
+
                 }
-                else //카메라에 있을 경우
+
+                else // 플레이어가 충돌범위에서 벗어났을때
                 {
-                    if (State == State.can_move) //움직일수 있는 상태일때
+                    if (can_turn) //카메라에서 벗어났을경우
                     {
-                        Nav.Stop(); //네비를 끈다
+                        if (State == State.can_move) //움직일수 있는 물체이면
+                        {
+                            Nav.destination = SetPosition; //원래 위치로 돌아간다.
+                            Nav.Resume();
+                        }
+
+                    }
+                    else // 카메라안에 있을 경우
+                    {
+                        if (State == State.can_move) // 움직일 수 있는 경우라면
+                        {
+                            Nav.Stop(); //멈춘다
+                        }
                     }
 
                 }
-
-
             }
-
-            else // 플레이어가 충돌범위에서 벗어났을때
+            else //시작변수가 거짓이면
             {
-                if (can_turn) //카메라에서 벗어났을경우
-                {
-                    if (State == State.can_move) //움직일수 있는 물체이면
-                    {
-                        Nav.destination = SetPosition; //원래 위치로 돌아간다.
-                        Nav.Resume();
-                    }
-
-                }
-                else // 카메라안에 있을 경우
-                {
-                    if (State == State.can_move) // 움직일 수 있는 경우라면
-                    {
-                        Nav.Stop(); //멈춘다
-                    }
-                }
 
             }
-        }
-        else //시작변수가 거짓이면
-        {
 
-        }
+            //만약 플레이어가 앉아있거나 멈춰있으면
+            if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
+            {
+                Box.size = new Vector3(4, 2.5f, 4); //충돌 범위를 줄인다.
 
-        //만약 플레이어가 앉아있거나 멈춰있으면
-        if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
-        {
-            Box.size = new Vector3(4, 2.5f, 4); //충돌 범위를 줄인다.
+            }
+            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
+            {
+                Box.size = new Vector3(8, 2.5f, 8); //충돌 범위를 조정한다
+            }
+            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
+            {
 
-        }
-        else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
-        {
-            Box.size = new Vector3(8, 2.5f, 8); //충돌 범위를 조정한다
-        }
-        else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
-        {
+                Box.size = new Vector3(15, 2.5f, 15); //충돌 범위를 조정한다
+            }
 
-            Box.size = new Vector3(15, 2.5f, 15); //충돌 범위를 조정한다
+            DataReset();
+            Sight();
         }
-
-        DataReset();
-        Sight();
     }
 
 

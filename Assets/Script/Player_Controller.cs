@@ -73,25 +73,29 @@ public class Player_Controller : MonoBehaviour
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
         Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
-        layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
+        //layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
+        layerMask = (1 << LayerMask.NameToLayer("Player")); //상호작용 레이어를 지정한다.
+        layerMask = ~layerMask;
         y = MainCamera.transform.position.y;
     }
 
     private void FixedUpdate()
     {
-        if (!is_Identify) //플레이어가 식별중이 아닐경우
+        if (GameManager.instance.is_Start)
         {
-            PlayerMove(); // 플레이어의 전후좌우 움직임 함수
-            PlayerRotation(); // 플레이어 좌우 움직임 함수
-            CameraRotation(); //1인칭 카메라 상하 움직임 함수
-            PlayerAnimation();
+            if (!is_Identify) //플레이어가 식별중이 아닐경우
+            {
+                PlayerMove(); // 플레이어의 전후좌우 움직임 함수
+                PlayerRotation(); // 플레이어 좌우 움직임 함수
+                CameraRotation(); //1인칭 카메라 상하 움직임 함수
+                PlayerAnimation();
+            }
+
+            FPSCamera();
+            RayCastFunction();
+            CoolTimeSet();
+            Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
         }
-
-        FPSCamera();
-        RayCastFunction();
-        CoolTimeSet();
-        Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
-
     }
 
 

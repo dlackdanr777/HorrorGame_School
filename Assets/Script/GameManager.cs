@@ -12,6 +12,7 @@ public enum Stage_State //현재 스테이지의 상황을 보여주는 변수
 }
 public class GameManager : MonoBehaviour
 {
+    public bool is_Start = true;
     public static GameManager instance;
     public Text HealthText; //체력을 보여주는 텍스트
     public Text ScoreText; //스코어를 보여주는 텍스트
@@ -21,16 +22,40 @@ public class GameManager : MonoBehaviour
     public float Health = 100f; //플레이어의 체력을 받아오는 변수
     public float Battery_Gauge = 100f; //플래시의 배터리 잔량을 표현하는 변수
 
+    public Text youWin;
+    public Text youDie;
+
 
 
     private void Awake()
     {
+        Screen.SetResolution(1920, 1080, true);
         instance = this;
     }
 
+    private void Start()
+    {
+        is_Start = true;
+        Cursor.visible = false;
+    }
     private void Update()
     {
         HealthText.text = Mathf.Floor(Health).ToString(); //플레이어의 체력을 ui창에 보여준다
         ScoreText.text = Score + "/8";
+
+        if(Health <= 0f)
+        {
+            is_Start = false;
+            youDie.gameObject.SetActive(true);
+            Cursor.visible = true;
+        }
+
+        if(Score == 8)
+        {
+            is_Start = false;
+            youWin.gameObject.SetActive(true);
+            Cursor.visible = true;
+        }
+
     }
 }
