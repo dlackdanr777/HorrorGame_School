@@ -27,7 +27,7 @@ public class StatueGhostController : MonoBehaviour
     [HideInInspector]
     public bool PossibleState = false; //현재 컨트롤 가능한 상태인지 입력받는 변수
     private Vector3 SetPosition;//오브젝트의 원래 위치를 받는다.
-
+    private Vector3 SetRotation;
     //시야 관련 변수
     private float m_angle = 120f; //시야각
     private float m_distance = 5f; //시야길이
@@ -38,6 +38,7 @@ public class StatueGhostController : MonoBehaviour
     private float CoolTime;
     private float ResetCoolTime; //리셋 쿨타임
     private float SetCooltime = 1f; // 쿨타임을 1초로 설정
+    private float time = 0;
     /// ///////////////////////////////////
 
 
@@ -49,6 +50,7 @@ public class StatueGhostController : MonoBehaviour
         if (State == State.can_move)
         {
             SetPosition = transform.position;
+            SetRotation = transform.rotation.eulerAngles;
             Nav = GetComponent<NavMeshAgent>();
             Nav.destination = transform.position;
             Nav.Stop();
@@ -72,7 +74,7 @@ public class StatueGhostController : MonoBehaviour
                         if (State == State.can_move) //만약 움직일수 있는 물체면
                         {
                             Nav.Resume(); //네비메쉬를 킨다
-                            if(Vector3.Distance(transform.position, Player.transform.position) < 0.5f)
+                            if(Vector3.Distance(transform.position, Player.transform.position) < 1f)
                             {
                                 GameManager.instance.Health = 0;
                             }
@@ -105,6 +107,15 @@ public class StatueGhostController : MonoBehaviour
                         {
                             Nav.destination = SetPosition; //원래 위치로 돌아간다.
                             Nav.Resume();
+                            if (Mathf.Abs(Nav.velocity.x + Nav.velocity.z) < 0.1f) //몬스터가 움직이지 않을경우
+                            {
+                                time += Time.deltaTime;
+                                if (time > 5f)
+                                {
+                                    time = 0;
+                                    transform.rotation = Quaternion.Euler(SetRotation);
+                                }
+                            }
                         }
 
                     }

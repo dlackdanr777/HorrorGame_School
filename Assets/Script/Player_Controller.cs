@@ -60,6 +60,7 @@ public class Player_Controller : MonoBehaviour
     private bool SetTrigger = false;
     private float CoolTime;
     private float SetCooltime = 0.6f; // 쿨타임을 0.6초로 설정
+    private float RunCoolTime;
 
     private int layerMask; //레이어 마스크를 지정한다.(레이케스트)
     /////////////////////////////////
@@ -67,16 +68,18 @@ public class Player_Controller : MonoBehaviour
     //카메라 무빙함수를 위한 변수들
     private float y; //카메라 위치를 조정할때 쓰이는 변수
     private float Time_I;
-
+    private AudioSource Audio; //자기자신의 컴포넌트를 받아온다.
     private void Start()
     {
         Controller = GetComponent<CharacterController>(); // 플레이어가 가지고 있는 캐릭터 콘트롤러 콜라이더를 변수에 할당
+        Audio = GetComponent<AudioSource>();
         Animator = GetComponent<Animator>();
         Movedir = Vector3.zero;
         //layerMask = 1 << LayerMask.NameToLayer("Interaction"); //상호작용 레이어를 지정한다.
         layerMask = (1 << LayerMask.NameToLayer("Player")); //상호작용 레이어를 지정한다.
         layerMask = ~layerMask;
         y = MainCamera.transform.position.y;
+
     }
 
     private void FixedUpdate()
@@ -90,11 +93,70 @@ public class Player_Controller : MonoBehaviour
                 CameraRotation(); //1인칭 카메라 상하 움직임 함수
                 PlayerAnimation();
             }
-
             FPSCamera();
             RayCastFunction();
             CoolTimeSet();
             Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
+            if (Player_State == (int)State.is_Run)
+            {
+                if(GameManager.instance.Stamina > 0)
+                {
+                    GameManager.instance.Stamina -= Time.deltaTime * 10f;
+                    RunCoolTime = 0;
+                }
+                else
+                {
+                    GameManager.instance.Stamina = 0f;
+                }
+
+                
+            }
+            else
+            {
+                RunCoolTime += Time.deltaTime;
+                if(RunCoolTime > 2f)
+                {
+                    if(GameManager.instance.Stamina < 100)
+                    {
+                        GameManager.instance.Stamina += Time.deltaTime * 5f;
+                    }
+                    else
+                    {
+                        GameManager.instance.Stamina = 100f;
+                    }
+
+                }
+
+            }
+        }
+
+        if (GameManager.instance.Stamina <= 40)
+        {
+            Audio.volume = 0.2f;
+            Audio.pitch = 1f;
+
+        }
+        else if (GameManager.instance.Stamina <= 50)
+        {
+            Audio.volume = 0.15f;
+            Audio.pitch = 0.98f;
+
+        }
+        else if (GameManager.instance.Stamina <= 60)
+        {
+            Audio.volume = 0.1f;
+            Audio.pitch = 0.94f;
+
+        }
+        else if (GameManager.instance.Stamina <= 70)
+        {
+            Audio.volume = 0.05f;
+            Audio.pitch = 0.9f;
+
+        }
+        else
+        {
+            Audio.volume = 0f;
         }
     }
 
@@ -107,10 +169,10 @@ public class Player_Controller : MonoBehaviour
 
             Movedir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")); //움직임 세팅
 
-            Movedir = transform.TransformDirection(Movedir); // 백터를 로컬좌표계에서 월드 좌표계 기준으로 변환
+            Movedir = transform.TransformDirection(Movedir).normalized; // 백터를 로컬좌표계에서 월드 좌표계 기준으로 변환
 
 
-            if (Player_State == (int)State.is_Walk || Player_State == (int)State.is_Stop) // 만약 현재 상태가 걷거나 멈춤이라면?
+            if (Player_State == (int)State.is_Walk) // 만약 현재 상태가 걷거나 멈춤이라면?
             {
                 Movedir *= Speed; // 스피드 값만큼 이동속도 증가 
             }
@@ -120,7 +182,7 @@ public class Player_Controller : MonoBehaviour
                 Movedir *= Speed * RunSpeed; // 스피드 값 * 달리기 계수만큼 이동속도 증가
             }
 
-            else if (Player_State == (int)State.is_Sit) // 만약 현재 상태가 앉아있는 중이라면?
+            else if (Player_State == (int)State.is_Sit || Player_State == (int)State.is_Stop) // 만약 현재 상태가 앉아있는 중이라면?
             {
                 Movedir *= (Speed * 0.5f); // 스피드/2 값만큼 이동속도 증가
             }
@@ -154,8 +216,8 @@ public class Player_Controller : MonoBehaviour
 
     IEnumerator Flash_Move()
     {
-        yield return new WaitForSeconds(0.3f);
-        Flashlight.transform.localRotation = Quaternion.Slerp(Flashlight.transform.localRotation, Quaternion.Euler(0f, -90f, -currentCameraRotationX), 20f * Time.deltaTime);
+        yield return new WaitForSeconds(0.1f);
+        Flashlight.transform.localRotation = Quaternion.Slerp(Flashlight.transform.localRotation, Quaternion.Euler(0f, -90f, -currentCameraRotationX), 15f * Time.deltaTime);
     }
 
     void PlayerRotation() //플레이어의 좌우회전을 구현한 함수
@@ -194,7 +256,15 @@ public class Player_Controller : MonoBehaviour
 
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
         {
-            Player_State = (int)State.is_Run; // 플레이어의 상태를 달리는 중으로 변경
+            if(GameManager.instance.Stamina > 0)
+            {
+                Player_State = (int)State.is_Run; // 플레이어의 상태를 달리는 중으로 변경
+            }
+            else
+            {
+                Player_State = (int)State.is_Walk; // 플레이어의 상태를 걷는 중으로 변경
+            }
+
         }
         
         else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f )) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?

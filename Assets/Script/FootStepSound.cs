@@ -28,12 +28,12 @@ public class FootStepSound : MonoBehaviour
         }
         else if(Player.Player_State == (int)Player_Controller.State.is_Walk || Player.Player_State == (int)Player_Controller.State.is_Stop) // 플레이어가 걷거나 서있을 경우?
         {
-            Audio.volume = 0.4f;
+            Audio.volume = 0.3f;
         }
         
         else if(Player.Player_State == (int)Player_Controller.State.is_Run)
         {
-            Audio.volume = 1f;
+            Audio.volume = 0.6f;
         }
 
         if (other.gameObject.tag == "Floor")

@@ -76,7 +76,7 @@ public class MonsterController : MonoBehaviour
 
         if(m_state == m_state.Tracking) //만약 추적중일때
         {
-            if(Vector3.Distance(transform.position, Player.transform.position) < 0.5f) //근접하게되면
+            if(Vector3.Distance(transform.position, Player.transform.position) < 1f) //근접하게되면
             {
                 GameManager.instance.Health = 0f;
             }
@@ -141,17 +141,17 @@ public class MonsterController : MonoBehaviour
 
                     case m_state.is_Walk: //만약 걷는중이라면
                         Nav.destination = Set_location; //지정된 위치로 이동하게한다.
-                        Nav_Start(1.5f);
+                        Nav_Start(1f);
                         break;
 
                     case m_state.is_Boundary: //추적중이라면
                         Nav.destination = Player_location; //플레이어 위치를 추적한다.
-                        Nav_Start(1.5f);
+                        Nav_Start(1f);
                         break;
 
                     case m_state.Tracking: //추격중이라면
                         Nav.destination = Player_location; //플레이어 위치를 추적한다.
-                        Nav_Start(4);
+                        Nav_Start(4.5f);
                         break;
                 }
 
