@@ -76,7 +76,7 @@ public class MonsterController : MonoBehaviour
 
         if(m_state == m_state.Tracking) //만약 추적중일때
         {
-            if(Vector3.Distance(transform.position, Player.transform.position) < 1f) //근접하게되면
+            if(Vector3.Distance(transform.position, Player.transform.position) < 1.5f) //근접하게되면
             {
                 GameManager.instance.Health = 0f;
             }
@@ -216,20 +216,28 @@ public class MonsterController : MonoBehaviour
     void HearAsound()
     {
         //만약 플레이어가 앉아있거나 멈춰있으면
-        if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
+        if (!Player_Controller.is_Noise) //소음 발생중이라면
         {
-            Box.size = new Vector3(3, 2.5f, 3); //충돌 범위를 줄인다.
+            if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
+            {
+                Box.size = new Vector3(3, 2.5f, 3); //충돌 범위를 줄인다.
 
-        }
-        else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
-        {
-            Box.size = new Vector3(20, 2.5f, 20); //충돌 범위를 조정한다
-        }
-        else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
-        {
+            }
+            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
+            {
+                Box.size = new Vector3(20, 2.5f, 20); //충돌 범위를 조정한다
+            }
+            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
+            {
 
-            Box.size = new Vector3(35, 8f, 35); //충돌 범위를 조정한다
+                Box.size = new Vector3(35, 8f, 35); //충돌 범위를 조정한다
+            }
         }
+        else //소음 발생중이라면
+        {
+            Box.size = new Vector3(30, 2.5f, 30); //충돌 범위를 조정한다
+        }
+
     }
 
     void Sight() //몬스터의 시야 관련 함수

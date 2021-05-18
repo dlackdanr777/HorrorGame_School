@@ -31,7 +31,7 @@ public class LightController : MonoBehaviour
     private void Start()
     {
         Sound = GetComponent<AudioSource>();
-        Sound.volume = 0.5f;
+        Sound.volume = 1f;
         if(LampMaterial != null) //마테리얼변수에 값이 담겨있을 경우만 실행
         {
             LampMaterial.SetColor("_EmissionColor", new Color(0, 0, 0));

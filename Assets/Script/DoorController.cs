@@ -56,12 +56,14 @@ public class DoorController : MonoBehaviour
     private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     /// ///////////////////////////////////
 
+    private GameObject Player;
     private Quaternion targetRotation; // 여닫이문의 변수
     float x;
     private void Start()
     {
+        Player = GameObject.Find("Player");
         Audio = GetComponent<AudioSource>();
-        Audio.volume = 0.4f; //문 사운드볼륨을 0.5로 지정
+        Audio.volume = 1f; //문 사운드볼륨을 0.5로 지정
 
         if(State == DoorState.OneDoor) //여닫이 문일경우
         {
@@ -188,6 +190,7 @@ public class DoorController : MonoBehaviour
             {
                 if (!SetTrigger)
                 {
+                    Player.GetComponent<Player_Controller>().StartCoroutine(Player.GetComponent<Player_Controller>().Noise_Generation());
                     SetTrigger = true;
                     if (is_Lock && GameManager.instance.OwnKey != (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수없는 문이라면
                     {

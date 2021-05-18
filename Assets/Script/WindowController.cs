@@ -31,12 +31,14 @@ public class WindowController : MonoBehaviour
     private float SetCooltime = 1f; // 쿨타임을 1초로 설정
     /// ///////////////////////////////////
 
+    private GameObject Player;
     float x;
     private void Start()
     {
         Audio = GetComponent<AudioSource>();
         Window2Controller = Window2.GetComponent<WindowController>();
-        Audio.volume = 0.4f; //문 사운드볼륨을 0.4로 지정
+        Player = GameObject.Find("Player");
+        Audio.volume = 1f; //문 사운드볼륨을 1로 지정
     }
 
     private void FixedUpdate()
@@ -106,6 +108,7 @@ public class WindowController : MonoBehaviour
             {
                 if (!SetTrigger)
                 {
+                    Player.GetComponent<Player_Controller>().StartCoroutine(Player.GetComponent<Player_Controller>().Noise_Generation());
                     SetTrigger = true;
                     Window2Controller.SetTrigger = true; //반대 문도 쿨타임을 적용시킨다.
 

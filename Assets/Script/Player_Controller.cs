@@ -56,6 +56,7 @@ public class Player_Controller : MonoBehaviour
     private Vector3 Movedir; // 플레아어가 움직이는 방향
     [HideInInspector]
     public bool is_Identify; //오브젝트를 식별중인가 아닌가를 입력받는 변수
+    public bool is_Noise; //소음이 발생하면 참이 되는 변수
     /////////////////쿨타임 관련 변수
     private bool SetTrigger = false;
     private float CoolTime;
@@ -91,68 +92,65 @@ public class Player_Controller : MonoBehaviour
                 PlayerMove(); // 플레이어의 전후좌우 움직임 함수
                 PlayerRotation(); // 플레이어 좌우 움직임 함수
                 CameraRotation(); //1인칭 카메라 상하 움직임 함수
-                PlayerAnimation();
+                Stemina_Controll(); //스테미나 관련 함수
             }
+            PlayerAnimation();
             FPSCamera();
             RayCastFunction();
             CoolTimeSet();
-            Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달
-            if (Player_State == (int)State.is_Run)
-            {
-                if(GameManager.instance.Stamina > 0)
-                {
-                    GameManager.instance.Stamina -= Time.deltaTime * 10f;
-                    RunCoolTime = 0;
-                }
-                else
-                {
-                    GameManager.instance.Stamina = 0f;
-                }
+            Animator.SetInteger("PlayerState", Player_State); // 애니메이터에 현재상태 변수 전달 
+        }
+    }
 
-                
+    void Stemina_Controll()
+    {
+        if (Player_State == (int)State.is_Run) //플레이어가 달리는중이라면
+        {
+            if (GameManager.instance.Stamina > 0) //스테미나가 0이상이면
+            {
+                GameManager.instance.Stamina -= Time.deltaTime * 10f; //스테미나를 줄인다.
+                RunCoolTime = 0;
             }
             else
             {
-                RunCoolTime += Time.deltaTime;
-                if(RunCoolTime > 2f)
+                GameManager.instance.Stamina = 0f; //0이하면 0으로 조정한다.
+            }
+        }
+        else
+        {
+            RunCoolTime += Time.deltaTime;
+            if (RunCoolTime > 2f)
+            {
+                if (GameManager.instance.Stamina < 100)
                 {
-                    if(GameManager.instance.Stamina < 100)
-                    {
-                        GameManager.instance.Stamina += Time.deltaTime * 5f;
-                    }
-                    else
-                    {
-                        GameManager.instance.Stamina = 100f;
-                    }
-
+                    GameManager.instance.Stamina += Time.deltaTime * 5f;
                 }
-
+                else
+                {
+                    GameManager.instance.Stamina = 100f;
+                }
             }
         }
 
-        if (GameManager.instance.Stamina <= 40)
+        if (GameManager.instance.Stamina <= 40) //스테미나가 40이하면
         {
-            Audio.volume = 0.2f;
+            Audio.volume = 0.5f;
             Audio.pitch = 1f;
-
         }
         else if (GameManager.instance.Stamina <= 50)
         {
-            Audio.volume = 0.15f;
+            Audio.volume = 0.45f;
             Audio.pitch = 0.98f;
-
         }
         else if (GameManager.instance.Stamina <= 60)
         {
-            Audio.volume = 0.1f;
+            Audio.volume = 0.4f;
             Audio.pitch = 0.94f;
-
         }
         else if (GameManager.instance.Stamina <= 70)
         {
-            Audio.volume = 0.05f;
+            Audio.volume = 0.35f;
             Audio.pitch = 0.9f;
-
         }
         else
         {
@@ -514,6 +512,12 @@ public class Player_Controller : MonoBehaviour
             ExplanationText.text = null;
         }
 
+    }
+    public IEnumerator Noise_Generation() //소음이 발생한 경우 실행한 코루틴
+    {
+        is_Noise = true;
+        yield return new WaitForSeconds(1f);
+        is_Noise = false;
     }
 
     void CoolTimeSet()
