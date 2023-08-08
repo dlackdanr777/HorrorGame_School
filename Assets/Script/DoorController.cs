@@ -190,7 +190,7 @@ public class DoorController : MonoBehaviour
             {
                 if (!SetTrigger)
                 {
-                    Player.GetComponent<Player_Controller>().StartCoroutine(Player.GetComponent<Player_Controller>().Noise_Generation());
+                    Player.GetComponent<PlayerController>().StartCoroutine(Player.GetComponent<PlayerController>().Noise_Generation());
                     SetTrigger = true;
                     if (is_Lock && GameManager.instance.OwnKey != (int)KeyStage) // 문이 잠겨있을 경우나 가지고 있는 키가 열수없는 문이라면
                     {

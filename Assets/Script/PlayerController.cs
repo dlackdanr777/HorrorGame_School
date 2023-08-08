@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player_Controller : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public enum State //플레이어의 상태를 열거
     {
-        is_Stop, //0일경우 멈춰있는 중
-        is_Sit = 1, // 1일경우 앉아있는중
-        is_Walk = 10, //10일경우 걷는중
-        is_Run = 11, // 11일경우 뛰는중
+        Stop, //0일경우 멈춰있는 중
+        Sit = 1, // 1일경우 앉아있는중
+        Walk = 10, //10일경우 걷는중
+        Run = 11, // 11일경우 뛰는중
 
     }
 
@@ -89,10 +89,10 @@ public class Player_Controller : MonoBehaviour
         {
             if (!is_Identify) //플레이어가 식별중이 아닐경우
             {
-                PlayerMove(); // 플레이어의 전후좌우 움직임 함수
+                Movement(); // 플레이어의 전후좌우 움직임 함수
                 PlayerRotation(); // 플레이어 좌우 움직임 함수
                 CameraRotation(); //1인칭 카메라 상하 움직임 함수
-                Stemina_Controll(); //스테미나 관련 함수
+                SteminaControll(); //스테미나 관련 함수
             }
             PlayerAnimation();
             FPSCamera();
@@ -102,9 +102,9 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    void Stemina_Controll()
+    void SteminaControll()
     {
-        if (Player_State == (int)State.is_Run) //플레이어가 달리는중이라면
+        if (Player_State == (int)State.Run) //플레이어가 달리는중이라면
         {
             if (GameManager.instance.Stamina > 0) //스테미나가 0이상이면
             {
@@ -134,22 +134,22 @@ public class Player_Controller : MonoBehaviour
 
         if (GameManager.instance.Stamina <= 40) //스테미나가 40이하면
         {
-            Audio.volume = 0.5f;
+            Audio.volume = 0.7f;
             Audio.pitch = 1f;
         }
         else if (GameManager.instance.Stamina <= 50)
         {
-            Audio.volume = 0.45f;
+            Audio.volume = 0.5f;
             Audio.pitch = 0.98f;
         }
         else if (GameManager.instance.Stamina <= 60)
         {
-            Audio.volume = 0.4f;
+            Audio.volume = 0.3f;
             Audio.pitch = 0.94f;
         }
         else if (GameManager.instance.Stamina <= 70)
         {
-            Audio.volume = 0.35f;
+            Audio.volume = 0.1f;
             Audio.pitch = 0.9f;
         }
         else
@@ -160,27 +160,26 @@ public class Player_Controller : MonoBehaviour
 
 
 
-    private void PlayerMove() //플레이어의 상하좌우 움직임의 함수
+    private void Movement() //플레이어의 상하좌우 움직임의 함수
     {
         if (Controller.isGrounded) // 만약 플레이어가 땅에 있으면?
         {
-
             Movedir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")); //움직임 세팅
 
             Movedir = transform.TransformDirection(Movedir).normalized; // 백터를 로컬좌표계에서 월드 좌표계 기준으로 변환
 
 
-            if (Player_State == (int)State.is_Walk) // 만약 현재 상태가 걷거나 멈춤이라면?
+            if (Player_State == (int)State.Walk) // 만약 현재 상태가 걷거나 멈춤이라면?
             {
                 Movedir *= Speed; // 스피드 값만큼 이동속도 증가 
             }
 
-            else if (Player_State == (int)State.is_Run) // 만약 현재 상태가 달리는 중이라면?
+            else if (Player_State == (int)State.Run) // 만약 현재 상태가 달리는 중이라면?
             {
                 Movedir *= Speed * RunSpeed; // 스피드 값 * 달리기 계수만큼 이동속도 증가
             }
 
-            else if (Player_State == (int)State.is_Sit || Player_State == (int)State.is_Stop) // 만약 현재 상태가 앉아있는 중이라면?
+            else if (Player_State == (int)State.Sit || Player_State == (int)State.Stop) // 만약 현재 상태가 앉아있는 중이라면?
             {
                 Movedir *= (Speed * 0.5f); // 스피드/2 값만큼 이동속도 증가
             }
@@ -230,7 +229,7 @@ public class Player_Controller : MonoBehaviour
     {
         if (Input.GetAxis("Vertical") == 0 && Player_State != 1) //만약 움직이지 않을 경우나 앉아있지 않을 경우?
         {
-            Player_State = (int)State.is_Stop;
+            Player_State = (int)State.Stop;
         }
 
         if (Input.GetKey(KeyCode.C)) // 만약 C버튼을 눌렀으면?
@@ -238,36 +237,36 @@ public class Player_Controller : MonoBehaviour
             if (!SetTrigger) // 쿨타임 설정
             {
                 SetTrigger = true;
-                if (Player_State != (int)State.is_Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
+                if (Player_State != (int)State.Sit) // 만약 플레이어의 상태가 앉아있는중이 아니라면?
                 {
-                    Player_State = (int)State.is_Sit; //플레이어의 상태를 앉아있는 중으로 변경
+                    Player_State = (int)State.Sit; //플레이어의 상태를 앉아있는 중으로 변경
                 }
 
                 else //만약 앉아있는 중이라면?
                 {
-                    Player_State = (int)State.is_Stop; //플레이어의 상태를 멈춤으로 변경
+                    Player_State = (int)State.Stop; //플레이어의 상태를 멈춤으로 변경
                 }
                    
             }
 
         }
 
-        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.is_Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
+        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxis("Vertical") > 0.5f && Player_State != (int)State.Sit) // 만약 왼쪽 쉬프트키를 누르고 있는 중 AND 앉아있는 중이 아니라면?
         {
             if(GameManager.instance.Stamina > 0)
             {
-                Player_State = (int)State.is_Run; // 플레이어의 상태를 달리는 중으로 변경
+                Player_State = (int)State.Run; // 플레이어의 상태를 달리는 중으로 변경
             }
             else
             {
-                Player_State = (int)State.is_Walk; // 플레이어의 상태를 걷는 중으로 변경
+                Player_State = (int)State.Walk; // 플레이어의 상태를 걷는 중으로 변경
             }
 
         }
         
-        else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.is_Sit && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f )) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?
+        else if(!Input.GetKey(KeyCode.LeftShift) && Player_State != (int)State.Sit && (Input.GetAxis("Vertical") > 0.5f || Input.GetAxis("Vertical") < -0.5f )) // 만약 왼쪽 쉬프트를 누르지 않고 있거나 앉아있는 중이 아니라면?
         {
-            Player_State = (int)State.is_Walk; //플레이어의 상태를 걷는 중으로 변경
+            Player_State = (int)State.Walk; //플레이어의 상태를 걷는 중으로 변경
         }
 
         if (Input.GetKey(KeyCode.F))
@@ -279,7 +278,7 @@ public class Player_Controller : MonoBehaviour
             }
         }
 
-        if(Player_State == (int)State.is_Sit) // 만약 앉아있을 경우
+        if(Player_State == (int)State.Sit) // 만약 앉아있을 경우
         {
             Controller.height = 1f; // 캐릭터의 높이를 1.3로 낮춤
             Controller.center = new Vector3(0f, 0.5f, 0.3f); //콜라이더의 중심점을 0.7로 낮춤
@@ -309,7 +308,7 @@ public class Player_Controller : MonoBehaviour
 
     void FPSCamera() //1인칭 카메라 위치를 계산하는 함수
     {
-        if (Player_State == (int)State.is_Sit)
+        if (Player_State == (int)State.Sit)
         {
 
             if(1 < (MainCamera.transform.position.y - transform.position.y))

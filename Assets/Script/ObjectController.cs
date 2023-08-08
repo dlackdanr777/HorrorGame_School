@@ -29,7 +29,7 @@ public class ObjectController : MonoBehaviour
 
     //플레이어 관련 변수
     private GameObject Player; //플레이어 캐릭터를 지정하는 변수
-    private Player_Controller Player_Controller;
+    private PlayerController Player_Controller;
 
     //아이템 정보 관련변수
     [Header("아이템 정보")]
@@ -55,7 +55,7 @@ public class ObjectController : MonoBehaviour
         Save_Position = transform.localPosition; //변수를 초기화한다
         Save_Rotation = transform.localRotation;//변수를 초기화한다
         Player = GameObject.Find("Player"); //플레이어를 찾아 넣어준다
-        Player_Controller = Player.GetComponent<Player_Controller>(); //플레이어의 스크립트를 받아온다.
+        Player_Controller = Player.GetComponent<PlayerController>(); //플레이어의 스크립트를 받아온다.
         Inventory = GameObject.FindObjectOfType<Inventory>();
 
     }
@@ -215,13 +215,13 @@ public class ObjectController : MonoBehaviour
                     if (!Player_Controller.is_Identify) //만약 플레이어가 식별중이 아닐경우
                     {
                         //플레이어 애니메이션 조정
-                        if (Player_Controller.Player_State != (int)Player_Controller.State.is_Sit) //앉아있는 중이 아니라면
+                        if (Player_Controller.Player_State != (int)PlayerController.State.Sit) //앉아있는 중이 아니라면
                         {
-                            Player_Controller.Player_State = (int)Player_Controller.State.is_Stop; //서있는 것으로 바꾼다
+                            Player_Controller.Player_State = (int)PlayerController.State.Stop; //서있는 것으로 바꾼다
                         }
                         else
                         {
-                            Player_Controller.Player_State = (int)Player_Controller.State.is_Sit; //앉아있는 것으로 바꾼다.
+                            Player_Controller.Player_State = (int)PlayerController.State.Sit; //앉아있는 것으로 바꾼다.
                             Player_Controller.Animator.SetFloat("MoveSpeed", 0); //애니메이션에 있는 MoveSpeed변수에 전후 방향키 입력전달
                             Player_Controller.Animator.SetFloat("HorizontalSpeed", 0); //애니메이션에 있는 HorizontalSpeed변수에 좌우 방향키 입력전달
 

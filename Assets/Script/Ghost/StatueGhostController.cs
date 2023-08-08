@@ -21,7 +21,7 @@ public class StatueGhostController : MonoBehaviour
     private bool Player_Detection = false; //플레이어가 시야 범위 안에 있으면 참을 받는 변수
     private bool is_Start = false; //언제 움직일 것인가를 받는 변수
     private GameObject Player; //플레이어의 오브젝트를 받아오는 변수
-    private Player_Controller Player_Controller;
+    private PlayerController Player_Controller;
     private NavMeshAgent Nav; //해당 오브젝트의 네비메쉬를 받아오는 변수
     private BoxCollider Box; //자신의 박스콜라이더를 받을 변수
     [HideInInspector]
@@ -45,7 +45,7 @@ public class StatueGhostController : MonoBehaviour
     private void Start()
     {
         Player = GameObject.Find("Player"); //플레이어를 찾아 넣는다.
-        Player_Controller = Player.GetComponent<Player_Controller>();
+        Player_Controller = Player.GetComponent<PlayerController>();
         Box = GetComponent<BoxCollider>();
         if (State == State.can_move)
         {
@@ -135,16 +135,16 @@ public class StatueGhostController : MonoBehaviour
             }
 
             //만약 플레이어가 앉아있거나 멈춰있으면
-            if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
+            if (Player_Controller.Player_State == (int)PlayerController.State.Stop || Player_Controller.Player_State == (int)PlayerController.State.Sit)
             {
                 Box.size = new Vector3(4, 2.5f, 4); //충돌 범위를 줄인다.
 
             }
-            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
+            else if (Player_Controller.Player_State == (int)PlayerController.State.Walk) //플레이어가 걷는 중이라면
             {
                 Box.size = new Vector3(8, 2.5f, 8); //충돌 범위를 조정한다
             }
-            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
+            else if (Player_Controller.Player_State == (int)PlayerController.State.Run) //플레이어가 뛰는 중이라면
             {
 
                 Box.size = new Vector3(15, 2.5f, 15); //충돌 범위를 조정한다

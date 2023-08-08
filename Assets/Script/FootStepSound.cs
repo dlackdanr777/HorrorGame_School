@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class FootStepSound : MonoBehaviour
 {
-    private Player_Controller Player; //플레이어의 스크립트를 받아옴
+    private PlayerController Player; //플레이어의 스크립트를 받아옴
     private AudioSource Audio; //플레이어 발의 컴포넌트를 받아옴
 
     [Header ("발소리 음원")]
@@ -15,23 +15,23 @@ public class FootStepSound : MonoBehaviour
 
     private void Start()
     {
-        Player = transform.root.gameObject.GetComponent<Player_Controller>();
+        Player = transform.root.gameObject.GetComponent<PlayerController>();
         Audio = GetComponent<AudioSource>();
         Audio.pitch = 0.9f;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(Player.Player_State == (int)Player_Controller.State.is_Sit) // 플레이어가 앉아있을 경우
+        if(Player.Player_State == (int)PlayerController.State.Sit) // 플레이어가 앉아있을 경우
         {
             Audio.volume = 0.3f;
         }
-        else if(Player.Player_State == (int)Player_Controller.State.is_Walk || Player.Player_State == (int)Player_Controller.State.is_Stop) // 플레이어가 걷거나 서있을 경우?
+        else if(Player.Player_State == (int)PlayerController.State.Walk || Player.Player_State == (int)PlayerController.State.Stop) // 플레이어가 걷거나 서있을 경우?
         {
             Audio.volume = 0.6f;
         }
         
-        else if(Player.Player_State == (int)Player_Controller.State.is_Run)
+        else if(Player.Player_State == (int)PlayerController.State.Run)
         {
             Audio.volume = 1f;
         }

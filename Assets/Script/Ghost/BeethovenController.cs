@@ -10,7 +10,7 @@ public class BeethovenController : MonoBehaviour
     private AudioSource Speaker; //스피커의 오디오를 불러오는 변수
 
     private GameObject Player; //플레이어를 받는 변수
-    private Player_Controller Player_Controller;
+    private PlayerController Player_Controller;
     [HideInInspector]
     public bool fncStart = false;
     private float timer = 0;
@@ -32,7 +32,7 @@ public class BeethovenController : MonoBehaviour
         Speaker = GetComponent<AudioSource>();
         Speaker.clip = music;
         Player = GameObject.Find("Player"); //플레이어 오브젝트를 찾아 넣는다.
-        Player_Controller = Player.GetComponent<Player_Controller>();
+        Player_Controller = Player.GetComponent<PlayerController>();
         RunFuc();
     }
 

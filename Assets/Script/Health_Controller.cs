@@ -16,7 +16,7 @@ public class Health_Controller : MonoBehaviour
     //다른 클래스를 참조하는 변수
     public GameObject Player; //플레이어를 받아오는 변수
     public GameObject Light_Button; //전등버튼을 받아오는 변수
-    private Player_Controller Player_Controller;
+    private PlayerController Player_Controller;
     private LightController LightController;
 
     //회복관련 변수
@@ -31,7 +31,7 @@ public class Health_Controller : MonoBehaviour
     private void Start()
     {
         Player = GameObject.Find("Player"); //플레이어를 받아온다
-        Player_Controller = Player.GetComponent<Player_Controller>(); //플레이어의 클래스를 받아온다.
+        Player_Controller = Player.GetComponent<PlayerController>(); //플레이어의 클래스를 받아온다.
 
         LightController = Light_Button.GetComponent<LightController>(); //전등의 클래스를 받아온다.
     }

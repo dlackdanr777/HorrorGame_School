@@ -17,7 +17,7 @@ public class MonsterController : MonoBehaviour
 
 
     private GameObject Player; //플레이어의 오브젝트를 받아오는 변수
-    private Player_Controller Player_Controller;
+    private PlayerController Player_Controller;
     private NavMeshAgent Nav; //해당 오브젝트의 네비메쉬를 받아오는 변수
     private BoxCollider Box; //자신의 박스콜라이더를 받을 변수
     private Vector3 Player_location; //플레이어의 위치를 받는 변수
@@ -50,7 +50,7 @@ public class MonsterController : MonoBehaviour
     private void Start()
     {
         Player = GameObject.Find("Player");
-        Player_Controller = Player.GetComponent<Player_Controller>();
+        Player_Controller = Player.GetComponent<PlayerController>();
 
         Nav = GetComponent<NavMeshAgent>();
         Box = GetComponent<BoxCollider>();
@@ -218,16 +218,16 @@ public class MonsterController : MonoBehaviour
         //만약 플레이어가 앉아있거나 멈춰있으면
         if (!Player_Controller.is_Noise) //소음 발생중이라면
         {
-            if (Player_Controller.Player_State == (int)Player_Controller.State.is_Stop || Player_Controller.Player_State == (int)Player_Controller.State.is_Sit)
+            if (Player_Controller.Player_State == (int)PlayerController.State.Stop || Player_Controller.Player_State == (int)PlayerController.State.Sit)
             {
                 Box.size = new Vector3(3, 2.5f, 3); //충돌 범위를 줄인다.
 
             }
-            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Walk) //플레이어가 걷는 중이라면
+            else if (Player_Controller.Player_State == (int)PlayerController.State.Walk) //플레이어가 걷는 중이라면
             {
                 Box.size = new Vector3(20, 2.5f, 20); //충돌 범위를 조정한다
             }
-            else if (Player_Controller.Player_State == (int)Player_Controller.State.is_Run) //플레이어가 뛰는 중이라면
+            else if (Player_Controller.Player_State == (int)PlayerController.State.Run) //플레이어가 뛰는 중이라면
             {
 
                 Box.size = new Vector3(35, 8f, 35); //충돌 범위를 조정한다

@@ -105,7 +105,7 @@ public class LockerController : MonoBehaviour
             {
                 if (!SetTrigger)
                 {
-                    Player.GetComponent<Player_Controller>().StartCoroutine(Player.GetComponent<Player_Controller>().Noise_Generation());
+                    Player.GetComponent<PlayerController>().StartCoroutine(Player.GetComponent<PlayerController>().Noise_Generation());
                     SetTrigger = true;
                     Locker2Controller.SetTrigger = true; //반대 문도 쿨타임을 적용시킨다.
 
